@@ -22,6 +22,10 @@
             // 记录输入框中的光标位置
             var anchorNode = $("#dis_output_formula")[0];
             var anchorOffset = 0;
+
+            var anchorNode = $("#dis_output_formula")[0];
+            // 自动聚焦
+            anchorNode.focus();
             // 创建 DOM 范围来操纵 DOM
             var insertRange = document.createRange();
             /* 输入按钮点击事件
@@ -31,25 +35,23 @@
             $(".dis_input_btn").on ("click", function (event) {
                 // console.log (anchorOffset);
                 // 根据点击的按钮来获取要输入的内容
-                var textContentInput = this.id.substr(this.id.length - 1);
+                var output = this.id.substr(this.id.length - 1);
                 // 如果点击的是 + - × ÷ ( ) 的话，再结果前后加空格
                 if (Array.prototype.slice.apply(event.target.classList).indexOf("dis_input_btn_punc") > 0) {
-                    textContentInput = " " + textContentInput + " ";
+                    output = " " + output + " ";
                 }
                 // 准备向公式区输入
-                textContentDOM = $("#dis_output_formula");
-                // 获取公式区中的 HTML 文档
-                var textContent = textContentDOM.html();
-                // 
-                // var arrTemp = textContent.split("");
-                // arrTemp.splice(anchorOffset, 0, textContentInput);
-                // anchorOffset += textContentInput.length;
-                // // 
-                // var textContentOutPut = arrTemp.join("");
-                // console.log (textContentOutPut);
-                textContent += textContentInput;
-
-                textContentDOM.html(textContent);
+                textContentNode = $("#dis_output_formula");
+                // 获取公式区中的 HTML 文档字符串
+                var textContentDOM = textContentNode.html();
+                // 对字符串进行处理，从 anchorOffset 处将字符串切开，将要插入的部分插入后再重新合并
+                var strTemp1 = textContentDOM.slice(0, anchorOffset);
+                var strTemp2 = textContentDOM.slice(anchorOffset);
+                output = strTemp1 + output + strTemp2;
+                // anchorOffset 向后增加一位
+                anchorOffset ++;
+                console.log (output);
+                textContentNode.html(output);
                 // outputFormulaGetFocus();
             });
 
@@ -122,10 +124,10 @@
                 var nodeTemp = $(insertNodeString);
                 // 使用 DOM Range 的方法 insertNode 向原来的光标所在处插入内容
                 insertRange.insertNode (nodeTemp[0]);
-                console.log (nodeTemp);
+                console.log ("nodeTemp", nodeTemp);
                 nodeTemp = undefined;
-                console.log (anchorNode, anchorOffset);
-                console.log (insertRange);
+                console.log ("anchorNode", anchorNode, "anchorOffset", anchorOffset);
+                console.log ("insertRange", insertRange);
             }
         });
     </script>
