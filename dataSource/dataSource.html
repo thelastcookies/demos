@@ -24,10 +24,21 @@
             var anchorNode = $("#dis_output_formula")[0];
             var anchorOffset = 0;
 
+            var dataSource = {
+                "#0320000143": 404.4,
+                "#0320000144": 8.7,
+                "#0320000145": 398.1,
+                "#0320000146": 9.0,
+                "#0320000147": 400.2,
+                "#0320000148": 9.2,
+
+            };
+
             // 自动聚焦
             anchorNode.focus();
             // 创建 DOM 范围来操纵 DOM
             var insertRange = document.createRange();
+
 
             /* 输入按钮点击事件
              *
@@ -48,51 +59,53 @@
 
             /* 点击数据源列表向公式框中添加数据源节点
              */
-            // $("#station_list_content tr td").on ("click", function (event) {
-            //     // 获取当前点击事件
-            //     var target = event.target;
-            //     // 初始化输出内容
-            //     var output = "<span class = 'dis_output_source' contenteditable = 'false'>#";
-            //     // 判断如果点击的是 数据源 这一列，则直接获取其数据源编号，如果不是，则顺着 tr 找到此行的数据源编号。
-            //     if (target.className != "station_list_content_data") {
-            //         output += target.parentElement.firstElementChild.innerText;
-            //     }
-            //     else {
-            //         output += target.innerText;
-            //     }
-            //     // 准备向公式区输入
-            //     textContentDOM = $("#dis_output_formula");
-            //     // 获取公式区里原有的内容，存储在 textContent 中。
-            //     // var textContent = textContentDOM.html();
-            //     // 向 textContent 里注入点击到的数据源编号，并封闭 span。
-            //     output += "</span> ";
-            //     // 调用 insertIntoOutputFormula 方法来插入内容
-            //     insertIntoOutputFormula (output);
-            //     notAnchorNode();
+            $("#station_list_content tr td").on ("click", function (event) {
+                // 获取当前点击事件
+                var target = event.target;
+                // 初始化输出内容
+                // var output = "<span class = 'dis_output_source' contenteditable = 'false'>#";
+                var output = " #";
+                // 判断如果点击的是 数据源 这一列，则直接获取其数据源编号，如果不是，则顺着 tr 找到此行的数据源编号。
+                if (target.className != "station_list_content_data") {
+                    output += target.parentElement.firstElementChild.innerText;
+                }
+                else {
+                    output += target.innerText;
+                }
+                output += " ";
+                // 准备向公式显示区输入
+                formulaContentDOM = $("#dis_output_formula");
+                // 获取公式显示区里原有的内容，存储在 textContent 中。
+                // var textContent = formulaContentDOM.html();
+                // 向 textContent 里注入点击到的数据源编号，并封闭 span。
+                // output += "</span> ";
+                // 调用 insertIntoOutputFormula 方法来插入内容
+                insertIntoOutputFormula (output);
+                // notAnchorNode();
 
-            //     console.log ("anchorNode", anchorNode);
-            //     console.log ("anchorOffset", anchorOffset);
+                // console.log ("anchorNode", anchorNode);
+                // console.log ("anchorOffset", anchorOffset);
 
-            //     // anchorOffset 向后增加一位
-            //     // anchorOffset += output.length;
-            //     // 自动聚焦
-            //     // $("#dis_output_formula").focus();
+                // anchorOffset 向后增加一位
+                // anchorOffset += output.length;
+                // 自动聚焦
+                // $("#dis_output_formula").focus();
                 
 
-            //     // 将增加新数据源编号的 textContent 放入公式区。
-            //     // textContentDOM.html(textContent);
-            //     // outputFormulaGetFocus();
-            // });
+                // 将增加新数据源编号的 textContent 放入公式显示区。
+                // formulaContentDOM.html(textContent);
+                // outputFormulaGetFocus();
+            });
 
 
 
 
             // 在每次输入框失去焦点时，更新 anchorNode 和 anchorOffset 的值，便于下次插入时从光标位置插入。
             $("#dis_output_formula").on("blur", function (event) {
-                // 当公式区失去焦点的时候，获取失焦前的光标所在位置，之后的内容要从其中插入。
+                // 当公式显示区失去焦点的时候，获取失焦前的光标所在位置，之后的内容要从其中插入。
                 anchorNode = window.getSelection().anchorNode;
                 anchorOffset = window.getSelection().anchorOffset;
-                console.log ($("#dis_output_formula").data("value"));
+                // console.log ($("#dis_output_formula").data("value"));
                 // $("#dis_output_formula").data("value", "312312312312");
                 // console.log ($("#dis_output_formula").data("value"));
 
@@ -120,26 +133,26 @@
             function outputFormulaGetFocus () {
             }
 
-            // 根据光标位置插入内容，同时更新公式区显示和公式区 value
+            // 根据光标位置插入内容，同时更新公式显示区显示和公式显示区 value
             // 参数：
-            // outputFormula 公式区显示内容
-            // outputValue 公式区 value
+            // outputFormula 公式显示区显示内容
+            // outputValue 公式显示区 value
             function insertIntoOutputFormula (outputFormula, outputValue) {
-                // 准备向公式区输入
+                // 准备向公式显示区输入
                 formulaContentNode = $("#dis_output_formula");
-                // 获取公式区中的 HTML 文档字符串
-                var formulaContentDOM = formulaContentNode.html();
+                // 获取公式显示区中的 HTML 文档字符串
+                var formulaContentDOM = formulaContentNode.text();
                 var formulaContentData = formulaContentNode.data("value");
                 // 对字符串进行处理，从 anchorOffset 处将字符串切开
-                var strTemp1 = textContentDOM.slice(0, anchorOffset);
-                var strTemp2 = textContentDOM.slice(anchorOffset);
+                var strTemp1 = formulaContentDOM.slice(0, anchorOffset);
+                var strTemp2 = formulaContentDOM.slice(anchorOffset);
                 // 更新 anchorOffset 的值
-                anchorOffset += output.length;
+                anchorOffset += outputFormula.length;
                 // 拼装输出的 HTML 字符串
-                output = strTemp1 + output + strTemp2;
-                // 将拼装好的字符串写入公式区
-                formulaContentNode.html(output);
-                // console.log (output);
+                outputFormula = strTemp1 + outputFormula + strTemp2;
+                // 将拼装好的字符串写入公式显示区
+                formulaContentNode.text(outputFormula);
+                // console.log (outputFormula);
             }
 
             // 该方法旨在实现：向 anchorNode，anchorOffset 所指定的位置插入内容
@@ -172,25 +185,36 @@
                 insertIntoOutputFormula (this.innerText);
             });
 
-            // 监听公式区的变化，并将计算结果输出到预览区
-            $("#dis_output_formula").bind('DOMNodeInserted', function(e) {
+            // 监听公式显示区的变化，并将计算结果输出到预览区
+            $("#dis_output_formula").bind('DOMSubtreeModified', function(e) {
+                var formulaText = $(e.target).text();
+                // var formulaTextNoNbsp = formulaText.replace();
+                var formulaTextRep = formulaText.replace(/#\d{1,} /g, function (match) {
+                    var matchNoNbsp = match.replace(/\s/g, "");
+                    return dataSource[matchNoNbsp];
+                });
+
                 try {
-                    console.log (math.format(math.eval($(e.target).html()), 4));
-                    $("#dis_output_result_cal").text (math.format(math.eval($(e.target).html()), 4));
+                    var calResult = math.format(math.eval(formulaTextRep), 7);
+                    console.log (calResult);
+
+                    if (calResult === "undefined")
+                        $("#dis_output_result_cal").text ("NaN");
+                    else
+
+                    // if (!isNaN(calResult))
+                        $("#dis_output_result_cal").text (calResult);
+                    // else
+                        // $("#dis_output_result_cal").text ("NaN");
+
                 } catch (e) {
-                    console.log (e.name, e.message);
+                    // console.log (e.name, e.message);
+                    $("#dis_output_result_cal").text ("NaN");
+
                 }
                 // if (math.eval($(e.target).html()))
 
             }); 
-
-
-            //////////////////
-            // 想法：
-            // 在 value 中存储 #3434343 + #543543534 格式
-            // 在公式区中展示时，使用正则匹配，将 数据源 左右加 <span>
-            // 在计算预览值时，使用正则匹配，将 数据源 替换成 值。
-
         });
     </script>
 
@@ -488,738 +512,7 @@
         /* dialog_bottom 样式 底部按钮等 结束 */
 
     </style>
-<!--     <script type="text/javascript" language="javascript">
-        var setting = {
-            view: {
-                selectedMulti: false
-            },
-            check: {
-                enable: true
-            },
-            data: {
-                simpleData: {
-                    enable: true
-                }
-            },
-            callback: {
-                beforeCheck: beforeCheck,
-                onCheck: onCheck,
-                onClick: onClick
-            }
-        };
-        function beforeCheck(treeId, treeNode) {
-            return (treeNode.doCheck !== false);
-        }
-        var point = '', name = '', pid = '', checkVal = 0;;
 
-        function onCheck(e, treeId, treeNode) {
-            point = '';
-            name = '';
-            pid = '';
-            var treeObj = $.fn.zTree.getZTreeObj("tree");
-            var nodes = treeObj.getCheckedNodes(true);
-
-            for (var i = 0; i < nodes.length; i++) {
-
-                if (treeNode.checked == true) {
-                    point += nodes[i].nodeID + ',';
-                    name += nodes[i].name + ',';
-                    pid += nodes[i].pid + ',';
-                }
-            }
-
-            if (name == '' || name == undefined) {
-                point = '', name = '', pid = '';
-                for (var i = 0; i < nodes.length; i++) {
-                    point += nodes[i].nodeID + ',';
-                    name += nodes[i].name + ',';
-                    pid += nodes[i].pid + ',';
-                }
-                name = name.substring(0, name.length - 1);
-                point = point.substring(0, point.length - 1);
-                pid = pid.substring(0, pid.length - 1);
-
-                name = name.replace('undefined', '');
-                point = point.replace('undefined', '');
-                pid = pid.replace('undefined', '');
-                if (name == '') {
-                    //alert('请选择测点');
-                    $("#dv_Formula_left_list").html("");
-                    $("#dv_table").html('');
-                    $("#container").html('');
-                }
-                else {
-                    
-                    ShowDiv('dv_Mask', 'dv_fade', point, name);
-                    $("#dv_table").hide();
-                    $("#container").show();
-                }
-            } else {
-                name = name.substring(0, name.length - 1);
-                point = point.substring(0, point.length - 1);
-                pid = pid.substring(0, pid.length - 1);
-                ShowDiv('dv_Mask', 'dv_fade', point, name);
-                $("#dv_table").hide();
-                $("#container").show();
-            }
-        }
-        function onClick(event, treeId, treeNode, clickFlag) {
-
-        }
-
-        var LoadBody = function () {
-            $("#sp_title").text('公式名称');
-            $("#start").text('开始');
-            $("#end").text('结束');
-            $("#jiange").text('间隔');
-            $("#btn_chart_show").html('查询');
-            $("#btn_save").html('保存');
-            $("#btn_print").html('打印');
-            $("#btn_Formula").html('公式');
-
-            LoadTree();
-        }
-
-        function getHeight() {
-            var newHeight = $(document.body).height();
-            var mainPage = $(window.parent.document).find("#mainPage");
-            var main = $(window.parent.document).find("#main");
-            mainPage.height(newHeight);
-            main.height(newHeight);
-        }
-        function setLoaction() {
-            var wd = $('.right_bottom').width();
-            var h = $(window).height();
-            //$('#content').css('height', h - 60 + 'px');
-            $('#container,#dv_table').css({ 'height': h - 62 + 'px', 'width': wd - 3 + 'px' });
-
-            $('#dv_left').css('height', h - 28 + 'px');
-        }
-        $(function () {
-            //window.parent.window.gotoScrollTop();
-
-            setLoaction();//自适应
-
-            Data();//时间框赋值
-            LoadData();//初始化数据
-            LoadBody();//初始化树
-
-            getSrceenWH();//获取页面宽度，高度
-            SearchTree();
-
-            $("#btn_save").click(function () {
-                var box = 300;
-                var th = $(window).height() / 2.5 - 75;
-                var rw = $(window).width() / 2 - 150;
-                $("#dv_Save_body").animate({ top: th, opacity: 'show', width: 300, height: 150, left: rw }, 500);
-                $('#dialogBg').fadeIn();
-            });
-            $("#btn_line").css("background-image", "url(../../Content/img/Map/map_trend_click.png)");
-            $("#btn_table").css("background-image", "url(../../Content/img/Map/map_table.png)");
-            $("#btn_line").click(function () {
-                $("#dv_table").hide();
-                $("#container").show();
-                $("#btn_line").css("background-image", "url(../../Content/img/Map/map_trend_click.png)");
-                $("#btn_table").css("background-image", "url(../../Content/img/Map/map_table.png)");
-            });
-            $("#btn_table").click(function () {
-                $("#dv_table").show();
-                $("#container").hide();
-                $("#btn_line").css("background-image", "url(../../Content/img/Map/map_trend.png)");
-                $("#btn_table").css("background-image", "url(../../Content/img/Map/map_table_click.png)");
-            });
-
-            $("#btn_chart_show").click(function () {    //查询
-                var ts = '清先选择测点在进行查询!';
-
-                var treeObj = $.fn.zTree.getZTreeObj("tree");
-                var nodes = treeObj.getCheckedNodes(true);
-
-                point = '', name = '', pid = '';
-
-                for (var i = 0; i < nodes.length; i++) {
-                    point += nodes[i].nodeID + ',';
-                    name += nodes[i].name + ',';
-                    pid += nodes[i].pid + ',';
-                }
-
-                name = name.substring(0, name.length - 1);
-                point = point.substring(0, point.length - 1);
-                pid = pid.substring(0, pid.length - 1);
-
-                if (point != '') {
-                    $.post('@Url.Content("~/History/LineShow")', { point: point, name: name, num: 3, count: $("#txt_jiange").val(), st: $("#sDate").val(), et: $("#eDate").val(), type: $("#sec_jiange").val(), fConnect: $("#fla_connect").val(), fTitle: $("#fla_title").val() }, function (data) {
-                        GetLine(data);
-                        GetTable(data.tb);
-                        CloseDiv('dv_Load_body', 'dv_Save');
-                        $("#dv_Formula_left_list").html(data.formula);
-                    }, 'json');
-                } else
-                {
-                    $("#dv_Formula_left_list").html("");
-                    alert(ts);
-                }
-                    
-            });
-
-            $("#btn_back").click(function () {
-                window.location.href = "@Url.Content('~/History/CustomTrend')";
-            });
-
-            $("#btn_print").click(function () {
-                $.post('@Url.Content("~/History/Print")', {}, function (data) {
-                    alert(data);
-                }, 'json');
-            });
-
-            /*公式删除*/
-            $("#btn_Del").click(function () {
-                checkVal = 1;
-                $.post('@Url.Content("~/History/GetFormula")', { query: 'del', fTitle: $("#fla_title").val(), fConnect: $("#fla_connect").val(), title: $("#txtTitle").val(), name: $("#txtFormula").val() }, function (data) {
-                    $("#dv_list").html(data.formulaList);
-                    $("#fla_title").val(data.formulaTitle);
-                    $("#fla_connect").val(data.formulaConnect);
-                }, 'json');
-            });
-
-            $("#btn_Formula").click(function () {
-
-                $("#text_search").text('Formula List');
-                $("#dv_Operate").show();
-                $("#dv_Formula_right").show();
-                $("#dv_Formula_left_add").hide();
-                $("#dv_Formula_right_add").hide();
-
-                var box = 300;
-                var th = $(window).height() / 2 - 180;
-                var rw = $(window).width() / 2 - 300;
-                $("#dv_Formula").animate({ top: th, opacity: 'show', width: 600, height: 360, left: rw }, 500);
-                $('#dialogBg').fadeIn();
-            });
-
-            /*公式添加*/
-            $("#btn_Add").click(function () {
-
-                //清空已选数据
-                $("#txtFormula").val('');
-                $("#txtTitle").val('');
-
-                $("#text_search").text('Formula Calculator');
-
-                $("#dv_Operate").hide();
-                $("#dv_Formula_right").hide();
-                $("#dv_Formula_left_add").show();
-                $("#dv_Formula_right_add").show();
-
-                typeBtn = 'add';
-
-                //CloseDiv('dv_Formula', '');
-            });
-
-            /*公式 添加  编辑  不操作数据库*/
-            $("#btn_Save_Formula").click(function () {
-                if (typeBtn == 'edit') {
-                    /*编辑公式*/
-
-                    $.post('@Url.Content("~/History/GetFormula")', { query: 'edit', fTitle: $("#fla_title").val(), fConnect: $("#fla_connect").val(), oleTitle: $("#dis_title").val(), oldFormula: $("#dis_formula").val(), title: $("#txtTitle").val(), name: $("#txtFormula").val() }, function (data) {
-                        //GetLine(data);
-                        $("#dv_list").html(data.formulaList);
-
-                        $("#fla_title").val(data.formulaTitle);
-                        $("#fla_connect").val(data.formulaConnect);
-
-                        $("#dv_Operate").show();
-                        $("#dv_Formula_right").show();
-                        $("#dv_Formula_left_add").hide();
-                        $("#dv_Formula_right_add").hide();
-
-                        $("#txtTitle").val('');
-                    }, 'json');
-
-
-                } else if (typeBtn == 'add') {
-                    /*增加公式不操作数据库*/
-
-                    $("#dis_con").val($("#txtFormula").val() + "~" + $("#dis_con").val());
-                    $("#dis_name").val($("#txtTitle").val() + "~" + $("#dis_name").val());
-
-                    $.post('@Url.Content("~/History/GetFormula")', { query: 'add', title: $("#txtTitle").val(), name: $("#txtFormula").val(), fTitle: $("#fla_title").val(), fConnect: $("#fla_connect").val() }, function (data) {
-                        //GetLine(data);
-                        $("#dv_list").html(data.formulaList);
-
-                        $("#fla_title").val(data.formulaTitle);
-                        $("#fla_connect").val(data.formulaConnect);
-
-                        $("#dv_Operate").show();
-                        $("#dv_Formula_right").show();
-                        $("#dv_Formula_left_add").hide();
-                        $("#dv_Formula_right_add").hide();
-                    }, 'json');
-                }
-            });
-
-            $("#btn_Save_Model").click(function () {
-
-                var treeObj = $.fn.zTree.getZTreeObj("tree");
-                var nodes = treeObj.getCheckedNodes(true);
-                var v = "";
-                for (var i = 0; i < nodes.length; i++) {
-                    v += nodes[i].id + ",";
-                }
-
-                $.post('@Url.Content("~/History/AddModel")', { id: v, name: $("#txtName").val(), formulaName: $("#fla_title").val(), formulaConnect: $("#fla_connect").val() }, function (data) {
-
-                    if (data.result = true) {
-                        alert('模板保存成功!');
-                        CloseDiv('dv_Save_body', 'dv_Save');
-                    }
-                    else
-                        alert('模板保存失败!');
-                }, 'json');
-            });
-            //RegChartRightClickEvents();
-        });
-
-        function SearchTree() {
-            $("#btnSearch").click(function () {
-
-                point = '';
-                name = '';
-                pid = '';
-                $("#dv_table").html('');
-                $("#container").html('');
-
-
-                /* $.get('@Url.Content("~/File/Tree.json")', {}, function (data) {
-                    var zNodes = eval(data.tree);
-                    $.fn.zTree.init($("#tree"), setting, zNodes);
-                }, 'json'); 
-                */
-                $.post('@Url.Content("~/History/GetSearchTree")', { key: $("#txtSearch").val() }, function (data) {
-                    var zNodes = eval(data.tree);
-                    $.fn.zTree.init($("#tree"), setting, zNodes);
-                }, 'json');
-            });
-
-        }
-
-        function updatepoint() {
-            $.post('@Url.Content("~/History/Updatetree")', {  }, function (data) {
-                $.get('@Url.Content("~/File/Tree.json")', {}, function (data) {
-                    var zNodes = eval(data.tree);
-                    var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
-                    
-                }, 'json');
-            }, 'json');
-        }
-
-
-        function LoadTree() {
-            $.ajax({
-                type:"GET",
-                url: '@Url.Content("~/File/Tree.json")',
-            cache:false,
-            dataType:"json",
-            success:function (data){
-                var zNodes = eval(data.tree);
-                var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
-                var id = GetCookie('id');           //模板编码
-                $.post('@Url.Content("~/History/GetZtree")', { id: id }, function (data) {
-                    var _nodesplit = data.tree.split(',');
-                    var treeObj = $.fn.zTree.getZTreeObj("tree");
-                    for (var i = 0; i < _nodesplit.length; i++) {
-                        treeObj.checkNode(treeObj.getNodeByParam("id", _nodesplit[i], null), true, true);
-                    }
-
-                }, 'json');
-            }
-        });
-        }
-
-
-        function LoadData() {
-
-            var id = GetCookie('id');           //模板编码
-            var judge = GetCookie('yaxis');     //是否是多Y轴
-            var max = GetCookie("max");         //最大值
-            var min = GetCookie("min");         //最小值
-            var y = GetCookie("y");             //Y轴是否自动增长
-
-            $.post('@Url.Content("~/History/GetZtreeListInit")', { id: id, judge: judge, max: max, min: min, y: y }, function (data) {
-
-                $("#dv_Formula_left_list").html(data.formula);
-                $("#dv_list").html(data.formulaList);
-
-                $("#fla_title").val(data.formulaTitle);
-                $("#fla_connect").val(data.formulaConnect);
-
-                GetLine(data);
-                GetTable(data.tb);
-            }, 'json');
-        }
-
-        function GetLineY(list) {
-            $('#container').highcharts({
-                chart: {
-                    type: 'spline'
-                },
-                title: {
-                    text: 'Trend Curve Chart'//标题
-                },
-                subtitle: {
-                    text: ''//副标题
-                },
-                xAxis: {
-                    type: 'datetime',
-                    labels: {
-                        overflow: 'justify'
-                    }
-                },
-                yAxis: {
-                    title: {
-                        text: ''//Y轴标题
-                    },
-                    //min: '',
-                    //max: '',
-                    minorGridLineWidth: 0,
-                    gridLineWidth: 0,
-                    alternateGridColor: null
-                },
-                tooltip: {
-                    valueSuffix: ' m/s', shared: true
-                },
-                plotOptions: {
-                    spline: {
-                        lineWidth: 0.4,
-                        states: {
-                            hover: {
-                                lineWidth: 0.5
-                            }
-                        },
-                        marker: {
-                            enabled: false
-                        },
-                        pointInterval: 3600000, // one hour
-                        pointStart: Date.UTC(2009, 9, 6, 0, 0, 0)
-                    }
-                },
-                series: list.list,
-                navigation: {
-                    menuItemStyle: {
-                        fontSize: '10px'
-                    }
-                }
-            });
-        }
-
-        //趋势显示
-        function GetLine(list) {
-            var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
-            if (list != null) {
-                chart = new Highcharts.Chart({
-                    chart: {
-                        renderTo: 'container',
-                        type: 'spline',
-                        zoomType: 'x',
-                        events: {
-                            click: function () {
-                                ////清空已选数据
-                                //$("#txtFormula").val('');
-
-                                //var box = 300;
-                                //var th = $(window).height() / 2.5 - 150;
-                                //var rw = $(window).width() / 2 - 200;
-                                //$("#dv_Formula").animate({ top: $(window).height() / 2, opacity: 'hide', width: 0, height: 0, left: $(window).width() / 2 }, 0);
-                                //$("#dv_Formula").animate({ top: th, opacity: 'show', width: 600, height: 360, left: rw }, 500);
-                                //$('#dialogBg').fadeIn();
-                            }
-                        }
-                    },
-                    title: {
-                        text: list.title
-                    },
-                    exporting: {
-                        enabled: false //用来设置是否显示‘打印’,'导出'等功能按钮，不设置时默认为显示
-                    },
-                    xAxis: {
-                        type: 'datetime',
-                        labels: {
-                            formatter: function () {
-                                return Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.value);
-                            }
-                        }
-                    },
-                    colors: ['#058DC7', '#50B432', '#ED561B', '#DDDF00', '#24CBE5', '#64E572', '#FF9655', '#FFF263', '#6AF9C4'],
-                    yAxis: list.yAxis,
-                    tooltip: {
-                        xDateFormat: '<b>' + '%Y-%m-%d %H:%M:%S' + '</b>',
-                        crosshairs: {
-                            width: 2,
-                            color: 'red'
-                        },
-                        shared: true
-                    },
-                    plotOptions: {
-                        spline: {
-                            lineWidth: 2,
-                            states: {
-                                hover: {
-                                    lineWidth: 2.5
-                                }
-                            },
-                            marker: {
-                                enabled: false
-                            }
-                        }
-                    },
-                    //exporting: {
-                    //    enabled: false
-                    //},
-                    exporting:
-                    {
-                        buttons: {    //配置按钮选项
-                            printButton: {    //配置打印按钮
-                                width: 50,
-                                symbolSize: 20,
-                                borderWidth: 2,
-                                borderRadius: 0,
-                                hoverBorderColor: 'red',
-                                height: 30,
-                                symbolX: 25,
-                                symbolY: 15,
-                                x: -200,
-                                y: 20
-                            },
-                            exportButton: {    //配置导出按钮
-                                width: 50,
-                                symbolSize: 20,
-                                borderWidth: 2,
-                                borderRadius: 0,
-                                hoverBorderColor: 'red',
-                                height: 30,
-                                symbolX: 25,
-                                symbolY: 15,
-                                x: -150,
-                                y: 20
-                            },
-                        },
-                        filename: '52wulian.org',//导出的文件名
-                        type: 'image/png',//导出的文件类型
-                        width: 800    //导出的文件宽度
-                    },
-                    credits: {
-                        enabled: false
-                    },
-                    series: list.list
-                });
-            }
-            else {
-                chart = new Highcharts.Chart({
-                    chart: {
-                        renderTo: 'container',
-                        type: 'spline'
-                    },
-                    title: {
-                        text: '趋势呈现数据图'
-                    },
-                    xAxis: {
-                        type: 'datetime'
-                    },
-                    exporting: {
-                        enabled: false //用来设置是否显示‘打印’,'导出'等功能按钮，不设置时默认为显示
-                    },
-                    yAxis: {
-                        title: {
-                            text: ''
-                        },
-                        min: 0
-                    }
-                });
-            }
-        }
-
-        function GetTable(tb) {
-            $("#dv_table").html(tb);
-        }
-
-
-        function GetCookie(objName) {//获取指定名称的cookie的值
-            var arrStr = document.cookie.split("; ");
-            for (var i = 0; i < arrStr.length; i++) {
-                var temp = arrStr[i].split("=");
-                if (temp[0] == objName) return unescape(temp[1]);
-            }
-        }
-
-        //弹出隐藏层
-        function ShowDiv(show_div, bg_div, point, name) {
-            var box = 300;
-            var th = $(window).height() / 2 - 150;
-            var rw = $(window).width() / 2 - 200;
-            $("#dv_Load_body").animate({ top: th, opacity: 'show', width: 400, height: 300, left: rw }, 500);
-            $('#dialogBg').fadeIn();
-            if ($("#eDate").val() != '' && $("#sDate").val() != '') {
-                if (point != '') {
-                    $.post('@Url.Content("~/History/LineShow")', { point: point, name: name, num: 3, count: $("#txt_jiange").val(), st: $("#sDate").val(), et: $("#eDate").val(), type: $("#sec_jiange").val(), fConnect: $("#fla_connect").val(), fTitle: $("#fla_title").val() }, function (data) {
-                        GetLine(data);
-                        GetTable(data.tb);
-                        CloseDiv('dv_Load_body', 'dv_Save');
-                        $("#dv_Formula_left_list").html(data.formula);
-                    }, 'json');
-                }
-            }
-            else
-                alert('查询时间不能为空!');
-        };
-        //关闭弹出层
-        function CloseDiv(show_div, bg_div) {
-            $('#dialogBg').fadeOut();
-            w = $(window).width() / 2;
-            h = $(window).height() / 2;
-            $("#" + show_div).animate({ top: h, opacity: 'hide', width: 0, height: 0, left: w }, 500);
-
-            $("#txtFormula").val('');
-            /*关闭弹出层时  重新绘制趋势*/
-
-            var treeObj = $.fn.zTree.getZTreeObj("tree");
-            var nodes = treeObj.getCheckedNodes(true);
-            var b = '';
-            for (var i = 0; i < nodes.length; i++) {
-                b += nodes[i].name + ",";
-            }
-
-            if (show_div == 'dv_Formula') {
-                if (checkVal == 0)
-                    $.post('@Url.Content("~/History/Redreaw")', { name: $("#fla_connect").val(), fTitle: $("#fla_title").val(), title: '', sTime: $("#sDate").val(), jg: $("#txt_jiange").val() }, function (data) {
-                        checkVal = 0;
-                        GetLine(data);
-                        GetTable(data.tb);
-                    }, 'json');
-                else                     /*当删除公式时，请求该方法*/
-                    $.post('@Url.Content("~/History/Redreaw")', { name: $("#fla_connect").val(), fTitle: $("#fla_title").val(), title: $("#txtTitle").val(), sTime: $("#sDate").val(), jg: $("#txt_jiange").val(), point: b }, function (data) {
-                        checkVal = 0;
-                        GetLine(data);
-                        GetTable(data.tb);
-                    }, 'json');
-            }
-        };
-        var w, h, className;
-        function getSrceenWH() {
-            w = $(window).width();
-            h = $(window).height();
-            $('#dialogBg').width(w).height(h);
-        }
-
-        window.onresize = function () {
-            getSrceenWH();
-        }
-        $(window).resize();
-
-        function Data() {
-
-            var data = new Date();
-            var year = data.getFullYear(); //获取完整的年份(4位,1970-????)
-            var month = data.getMonth() + 1;  //获取当前月份(0-11,0代表1月)
-            var day = data.getDate();
-
-            $("#sDate").val(year + '-' + month + '-' + day + ' 0:00:00');
-            $("#eDate").val(year + '-' + month + '-' + day + ' ' + data.getHours() + ':00:00');
-        }
-
-        function RegChartRightClickEvents() {
-            document.oncontextmenu = false;
-            ////图表容器的右键鼠标事件
-            //$("#container").bind("mouseup", function (oEvent) {
-            //    if (!oEvent) oEvent = window.event;
-            //    if (oEvent.button == 2) {
-
-            //        //var box = 300;
-            //        //var th = $(window).height() / 2.5 - 150;
-            //        //var rw = $(window).width() / 2 - 200;
-            //        //$("#dv_Formula").animate({ top: $(window).height() / 2, opacity: 'hide', width: 0, height: 0, left: $(window).width() / 2 }, 0);
-            //        //$("#dv_Formula").animate({ top: th, opacity: 'show', width: 400, height: 300, left: rw }, 500);
-            //        //$('#dialogBg').fadeIn();
-
-            //    }
-            //});
-        }
-        function addValue(val) {
-            alert(val);
-            $("#txtFormula").val($("#txtFormula").val() + "'" + val + "'");
-        }
-        /*公式删除*/
-        function DelFormula(obj, id, formula, title, cid) {
-
-            $("#txtTitle").val(title);
-
-            formula = formula.replace(/~/g, "'");
-            $("#txtFormula").val(formula);
-
-            $("#dis_id").val(cid);              /*模板编码*/
-            $("#dis_title").val(title);         /*公式标题*/
-            $("#dis_formula").val(formula);     /*公式内容*/
-
-
-            checkVal = 1;
-            $.post('@Url.Content("~/History/GetFormula")', { query: 'del', fTitle: $("#fla_title").val(), fConnect: $("#fla_connect").val(), title: $("#txtTitle").val(), name: $("#txtFormula").val() }, function (data) {
-                $("#dv_list").html(data.formulaList);
-                $("#fla_title").val(data.formulaTitle);
-                $("#fla_connect").val(data.formulaConnect);
-            }, 'json');
-        }
-        function EditFormula(obj, id, formula, title, cid) {
-            $("#txtTitle").val(title);
-
-            formula = formula.replace(/~/g, "'");
-            $("#txtFormula").val(formula);
-
-            $("#dis_id").val(cid);              /*模板编码*/
-            $("#dis_title").val(title);         /*公式标题*/
-            $("#dis_formula").val(formula);     /*公式内容*/
-        }
-        var typeBtn = '';
-        function EditFormulaDbl(id, formula, title, cid) {
-            typeBtn = 'edit';
-            /*ID 为模板ID*/
-            $("#dv_Operate").hide();
-            $("#dv_Formula_right").hide();
-            $("#dv_Formula_left_add").show();
-            $("#dv_Formula_right_add").show();
-
-            $("#txtTitle").val(title);
-
-            formula = formula.replace(/~/g, "'");
-            $("#txtFormula").val(formula);
-
-            $("#dis_id").val(cid);              /*模板编码*/
-            $("#dis_title").val(title);         /*公式标题*/
-            $("#dis_formula").val(formula);     /*公式内容*/
-        }
-
-        function mouseClick(obj) {
-            clearClickClass();
-            if (obj.className == "tr_over_1" || obj.className == "tr_1")
-                obj.className = "tr_foucs_1";
-            else if (obj.className == "tr_over_2" || obj.className == "tr_2")
-                obj.className = "tr_foucs_2";
-        }
-        function clearClickClass() {
-            $('table').find('tr').each(function () {
-                if ($(this).attr('class') == "tr_foucs_1")
-                    $(this).attr('class', 'tr_1');
-                else if ($(this).attr('class') == "tr_foucs_2")
-                    $(this).attr('class', 'tr_2');
-            });
-        }
-
-    </script> -->
-<!--     <script type="text/javascript">
-    	$(function () {
-    		$("#dv_operate_btn_add").click (function () {
-
-    		});
-    	});
-    </script> -->
 </head>
 <body>
     <div id = "dialogBg"></div>
@@ -1343,35 +636,40 @@
                     <div class = "station_list_content_container">
                     	<table class = "station_list" id = "station_list_content">
                     		<tr>
-                    			<td class = "station_list_content_data">1111111111</td>
+                    			<td class = "station_list_content_data">0320000143</td>
                     			<td class = "station_list_content_name">逆变器N13交流电压</td>
                     			<td class = "station_list_content_value">404.4</td>
                     		</tr>
                     		<tr>
-                    			<td class = "station_list_content_data">2222222222</td>
+                    			<td class = "station_list_content_data">0320000144</td>
                     			<td class = "station_list_content_name">逆变器N13交流电流</td>
                     			<td class = "station_list_content_value">8.7</td>
                     		</tr>
                             <tr>
-                                <td class = "station_list_content_data">3333333333</td>
-                                <td class = "station_list_content_name">逆变器N13交流电流</td>
-                                <td class = "station_list_content_value">8.7</td>
+                                <td class = "station_list_content_data">0320000145</td>
+                                <td class = "station_list_content_name">逆变器N14交流电流</td>
+                                <td class = "station_list_content_value">398.1</td>
                             </tr>
                             <tr>
-                                <td class = "station_list_content_data">4444444444</td>
-                                <td class = "station_list_content_name">逆变器N13交流电流</td>
-                                <td class = "station_list_content_value">8.7</td>
+                                <td class = "station_list_content_data">0320000146</td>
+                                <td class = "station_list_content_name">逆变器N14交流电流</td>
+                                <td class = "station_list_content_value">9.0</td>
                             </tr>
                             <tr>
-                                <td class = "station_list_content_data">5555555555</td>
-                                <td class = "station_list_content_name">逆变器N13交流电流</td>
-                                <td class = "station_list_content_value">8.7</td>
+                                <td class = "station_list_content_data">0320000147</td>
+                                <td class = "station_list_content_name">逆变器N15交流电流</td>
+                                <td class = "station_list_content_value">400.2</td>
+                            </tr>
+                            <tr>
+                                <td class = "station_list_content_data">0320000148</td>
+                                <td class = "station_list_content_name">逆变器N15交流电流</td>
+                                <td class = "station_list_content_value">9.2</td>
                             </tr>
                     	</table>
                     </div>
                 </div>
                 <div id = "dis_output" class = "dialog_body_part">
-                	<div id = "dis_output_formula" contenteditable = "true" data-value = "213456"></div>
+                	<div id = "dis_output_formula" contenteditable = "true" spellcheck = "false" data-value = ""></div>
                 	<div id = "dis_output_result">输出预览：<span id = "dis_output_result_cal"></span></div>
                 </div>
             </div>
@@ -1379,7 +677,7 @@
         <div class = "dialog_bottom">
         	<button class = "dis_operate_btn" id = "dis_operate_btn_cancel">取消</button>
             <button class = "dis_operate_btn" id = "dis_operate_btn_save">保存</button>
-            <button class = "dis_operate_btn" id = "dis_operate_btn_test">测试</button>
+            <!-- <button class = "dis_operate_btn" id = "dis_operate_btn_test">测试</button> -->
         </div>
 
     </div>
