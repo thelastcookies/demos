@@ -250,9 +250,17 @@
             padding-left: 8px;
             padding-top: 15px;
     	}
+
+        /* 页面的两大模块 开始*/
         div#dv_formula_show {
+            /*display: none;*/
+        }
+        div#dv_formula_modify {
             display: none;
         }
+        /* 页面的两大模块 结束*/
+
+        /* 每个模块的 top，body，bottom div 开始*/
         div.dialog_top {
             width: 800px;
             margin:;
@@ -261,59 +269,84 @@
             margin-bottom: 25px;
             /*height: 100px;*/
         }
-        .dialog_name {
+        div.dialog_body {
+            width: 100%;
+            height: 80%;
+            font-size:0;
+        }
+        /* 每个模块的 top，body，bottom div 结束*/
+        /* dialog_bottom 样式 底部按钮等 开始 */
+        div.dialog_bottom {
+            padding-left: 600px;
+        }
+        button.dis_operate_btn {
+            width: 53px;
+            height: 27px;
+            border: solid 1px #e5e5e5;
+            background-color: #fff;
+            box-sizing: border-box;
+            font-size: 12px;
+            padding: 0;
+            text-align: center;
+            line-height: 25px;
+            border-radius: 5px;
+            margin-left: 18px;
+        }
+        /* dialog_bottom 样式 底部按钮等 结束 */
+        /* 每个模块的 top，body，bottom div 结束*/
+        /* 以下为 dv_formula_show 界面的相关样式 */
+        div#dv_formula_show {
+            padding-right: 15px;
         }
         div#formula_list_div {
             width: 100%;
             height: 80%;
         }
-        /*table.list {
-            border: 1px solid #e5e5e5;
+        div#formula_list_container {
+            margin-left: 7px;
+            border: solid 1px #e5e5e5;
+        }
+        table.formula_list {
             width: 100%;
-            line-height: 60px;
+            padding: 0;
+            font-size: 12px;
             text-align: center;
-            font-size: 12px;
+            line-height: 28px;
         }
-
-        tr.table_title {
-            height: 33px;
-            background-color: #aaa;
+        table#formula_list_title {
+            border: 0;
+            background-color: #e5e5e5;
         }
-        th.table_title_name {
+        div#formula_list_content_container {
+            height: 310px;
+            box-sizing: border-box;
+            overflow: auto;
+            margin-top: 1px;
         }
-        th.table_title_formula {
+        table#formula_list_content {
+            border: 0;
         }
-        th.table_title_operate {
-        }*/
-
-    	button.dv_operate_btn {
-            width: 52px;
-            height: 25px;
-            border: #aaa 1px solid;
-            border-radius: 50px;
-            font-size: 12px;
-    		display: inline-block;
-            background-color: #fff;
-    	}
-        button.dv_operate_btn:active {
-            color: #aaa;
+        table#formula_list_content tr:nth-child(2n) {
+            border: 0;
+            background-color: #e5e5e5;
         }
-        button#dv_operate_btn_cancel {
-            margin:;
+        th.formula_list_title_name,
+        td.formula_list_content_name {
+            width: 30%;
         }
-
-        div#dv_formula_modify {
-            /*display: none;*/
-            padding:;
+        th.formula_list_title_formula,
+        td.formula_list_content_formula {
+            width: 50%;
         }
-        div#dialog_top {
-            font-size: 18px;
+        th.formula_list_title_operate,
+        td.formula_list_content_operate {
+            width: 20%;
         }
-        div#dialog_body {
-            width: 100%;
-            height: 80%;
-            font-size:0;
-
+        /* 以上为 dv_formula_show 界面的相关样式 */
+        /* 以下为 dv_formula_modify 界面的相关样式 */
+        /* dv_formula_modify 页面中 dialog_body 样式 开始*/
+        div.dialog_body_line {
+            margin-bottom: 10px;
         }
         div.dialog_body_part {
             /*background-color: #bbb;*/
@@ -324,9 +357,8 @@
         div.dialog_body_part:last-of-type {
             margin-right: 0;
         }
-        div.dialog_body_line {
-            margin-bottom: 10px;
-        }
+        /* dv_formula_modify 页面中 dialog_body 样式 结束*/
+        /* 数学公式列表 开始 */
         div#dis_title {
             width: 180px;
             height: 26px;
@@ -340,7 +372,6 @@
             text-align: center;
             /*display: inline-block;*/
         }
-        /* 数学公式列表 开始 */
         div#dis_formula {
             width: 180px;
             height: 130px;
@@ -363,8 +394,7 @@
             background-color: #e5e5e5;
         }
         /* 数学公式列表 结束 */
-
-        /* */
+        /* 输入板样式 开始 */
         div#dis_formula_intro {
             width: 230px;
             height: 165px;
@@ -403,13 +433,13 @@
         button.dis_input_btn_sm {
             width: 35px;
         }
-        /* 表格样式 开始 */
-        div#dis_list {
+        /* 输入板样式 结束 */
+        /* 数据源列表样式 开始 */
+        div#station_list_container {
             width: 420px;
             height: 165px;
             box-sizing: border-box;
             border: solid 1px #e5e5e5;
-
         }
         table.station_list {
             width: 100%;
@@ -418,15 +448,15 @@
             text-align: center;
             line-height: 28px;
         }
+        table.station_list_title {
+            border: 0;
+            background-color: #e5e5e5;
+        }        
         div.station_list_content_container {
             height: 126px;
             box-sizing: border-box;
             overflow: auto;
             margin-top: 1px;
-        }
-        table.station_list_title {
-            border: 0;
-            background-color: #e5e5e5;
         }
         table#station_list_content {
             border: 0;
@@ -448,10 +478,8 @@
         td.station_list_content_value {
             width: 20%;
         }
-
-        /* 表格样式 结束 */
-
-        /* 最后一块的输出公式和计算结果 开始 */
+        /* 数据源列表样式 结束 */
+        /* 公式显示区和结果预览 开始 */
         div#dis_output {
             width: 350px;
             height: 165px;
@@ -475,13 +503,6 @@
         span.dis_output_source {
             background-color: #ddd;
         }
-        /*      
-        span.dis_output_source:after {
-            content: "×";
-            position: relative;
-            top: -10px;
-        }
-        */
         div#dis_output_result {
             width: 100%;
             height: 30px;
@@ -490,27 +511,8 @@
             padding: 0 10px;
             line-height: 30px;
         }
-        /* 最后一块的输出公式和计算结果 结束 */
-
-        /* dialog_bottom 样式 底部按钮等 开始 */
-        div.dialog_bottom {
-            padding-left: 600px;
-        }
-        button.dis_operate_btn {
-            width: 53px;
-            height: 27px;
-            border: solid 1px #e5e5e5;
-            background-color: #fff;
-            box-sizing: border-box;
-            font-size: 12px;
-            padding: 0;
-            text-align: center;
-            line-height: 25px;
-            border-radius: 5px;
-            margin-left: 18px;
-        }
-        /* dialog_bottom 样式 底部按钮等 结束 */
-
+        /* 公式显示区和结果预览 结束 */
+        /* 以上为 dv_formula_modify 界面的相关样式 */
     </style>
 
 </head>
@@ -523,31 +525,94 @@
             <div class="dialog_name">公式列表</div>
             <div class="btn_close" onclick="CloseDiv('dv_Formula', '')"></div>
         </div>
-        <!--公式列表 -->
-            <!--<div id="btn_Del" class="button_save" style=" align-content:center;">Del</div> -->
-            <!--<div id="btn_Edit"  class="button_save" style=" align-content:center;" >Edit</div> -->
-            <div id = "formula_list_div">
-            	<table id = "formula_list" class = "list" cellspacing="0">
-            		<tr class = "table_title">
-            			<th class = "table_title_name">公式名称</th>
-            			<th class = "table_title_formula">公式内容</th>
-            			<th class = "table_title_operate">操作</th>
-            		</tr>
-            		<tr>
-            			<td>公式一</td>
-            			<td>a+b-c</td>
-            			<td></td>
-            		</tr>
-            		<tr>
-            			<td>公式二</td>
-            			<td>a+b-c</td>
-            			<td></td>
-            		</tr>
-            	</table>
+        <div class = "dialog_body">
+            <div id = "formula_list_container">
+                <table id = "formula_list_title" class = "formula_list">
+                	<tr>
+                		<th class = "formula_list_title_name">公式名称</th>
+                		<th class = "formula_list_title_formula">公式内容</th>
+                		<th class = "formula_list_title_operate">操作</th>
+                	</tr>
+                </table>
+                <div id = "formula_list_content_container">
+                    <table id = "formula_list_content" class = "formula_list">
+                    	<tr>
+                    		<td class = "formula_list_content_name">公式一</td>
+                    		<td class = "formula_list_content_formula">a+b-c</td>
+                    		<td class = "formula_list_content_operate">编辑 删除</td>
+                    	</tr>
+                    	<tr>
+                    		<td class = "formula_list_content_name">公式二</td>
+                    		<td class = "formula_list_content_formula">a+b-c</td>
+                    		<td class = "formula_list_content_operate">编辑 删除</td>
+                    	</tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式一</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式二</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式一</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式二</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式一</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式二</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式一</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式二</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式一</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式二</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式一</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                        <tr>
+                            <td class = "formula_list_content_name">公式二</td>
+                            <td class = "formula_list_content_formula">a+b-c</td>
+                            <td class = "formula_list_content_operate">编辑 删除</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
-        <div id="dv_operate" class = "dialog_bottom">
-            <button class = "dv_operate_btn" id = "dv_operate_btn_cancel">取消</button>
-            <button class = "dv_operate_btn" id = "dv_operate_btn_add">新建</button>
+        </div>
+        <div class = "dialog_bottom" id="dv_operate">
+            <button class = "dis_operate_btn" id = "dv_operate_btn_cancel">取消</button>
+            <button class = "dis_operate_btn" id = "dv_operate_btn_add">新建</button>
         </div>
     </div>
 
@@ -557,7 +622,7 @@
             <span class="dialog_name">参数集合</span>
             <div class="btn_close" onclick=""></div>
         </div>
-        <div id = "dialog_body">
+        <div class = "dialog_body">
             <div class = "dialog_body_line">
                 <div class = "dialog_body_part">
             	    <div id = "dis_title">函数及操作符信息</div>
@@ -625,7 +690,7 @@
             	</div>
             </div>
             <div class = "dialog_body_line">
-                <div id = "dis_list" class = "dialog_body_part">
+                <div id = "station_list_container" class = "dialog_body_part">
                     <table class = "station_list station_list_title">
                         <tr>
                             <th class = "station_list_title_data">数据源</th>
@@ -670,7 +735,7 @@
                 </div>
                 <div id = "dis_output" class = "dialog_body_part">
                 	<div id = "dis_output_formula" contenteditable = "true" spellcheck = "false" data-value = ""></div>
-                	<div id = "dis_output_result">输出预览：<span id = "dis_output_result_cal"></span></div>
+                	<div id = "dis_output_result">输出预览：<span id = "dis_output_result_cal">NaN</span></div>
                 </div>
             </div>
         </div>
@@ -679,21 +744,6 @@
             <button class = "dis_operate_btn" id = "dis_operate_btn_save">保存</button>
             <!-- <button class = "dis_operate_btn" id = "dis_operate_btn_test">测试</button> -->
         </div>
-
     </div>
 </body>
 </html>
-<!--
-            <span id="sp_title" class="toolbar_text">&nbsp;&nbsp;公式名称&nbsp;:</span>&nbsp;&nbsp;&nbsp;<input id="txtTitle" class="frame_input" value="" style="width:314px; height:23px;" />
-            <textarea id="txtFormula" class="frame_input"></textarea>
-            <input id="dis_name" style="display:none;" />
-            <input id="dis_con" style="display:none;" />
-            <input id="dis_id" style="display:none;" />
-            <input id="dis_title" style="display:none;" />
-            <input id="dis_formula" style="display:none;" />
-
-            <input id="fla_title" style="display:none;" />
-            <input id="fla_connect" style="display:none;" />
-            <div id="btn_Save_Formula" class="button_save" style="align-content:center; margin:;
-
-        -->
