@@ -15,8 +15,10 @@
     <script src="@Url.Content("~/Content/Trend/js/jquery.ztree.core-3.5.js")"></script>
     <script src="@Url.Content("~/Content/Trend/js/jquery.ztree.excheck-3.5.js")"></script>
     <script src="@Url.Content("~/Content/Trend/js/PrintExcel.js")"></script> -->
-    <script type="text/javascript" src = "../../../js-repo/jquery/jquery-3.1.1.js"></script>
-    <script type="text/javascript" src = "../../../js-repo/mathjs/math.js"></script>
+    <script type="text/javascript" src = "../../../code-repo/jquery/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src = "../../../code-repo/mathjs/math.js"></script>
+    <!-- <link rel = "stylesheet" href = "../../../code-repo/animatecss/animate.css"> -->
+
     <script type="text/javascript">
         $(function () {
             //
@@ -31,7 +33,6 @@
                 "#0320000146": 9.0,
                 "#0320000147": 400.2,
                 "#0320000148": 9.2,
-
             };
 
             // 自动聚焦
@@ -215,6 +216,35 @@
                 // if (math.eval($(e.target).html()))
 
             }); 
+
+
+
+            // 各个按钮的点击事件
+            // 公式列表页的 新建 按钮
+            $("#dv_operate_btn_add").on ("click", function () {
+                // $('#dv_formula_show').addClass('animated fadeOut');
+                // $("#dv_formula_show").animateCss('bounce');
+                $('#dv_formula_show').css("display", "none");
+                $('#dv_formula_modify').css("display", "block");
+            });
+            // 公式列表页的 取消 按钮
+            // 公式列表页的 X 按钮
+            $("#dv_operate_btn_cancel, #dv_formula_show_close").on ("click", function () {
+                // $('#dv_formula_show').addClass('animated fadeOut');
+                // $("#dv_formula_show").animateCss('bounce');
+                $('#dv_formula_show').css("display", "none");
+            });
+
+            // 公式修改页的 保存 按钮
+            
+            // 公式修改页的 取消 按钮
+            // 公式修改页的 X 按钮
+            $("#dis_operate_btn_cancel, #dv_formula_modify_close").on ("click", function () {
+                // $('#dv_formula_show').addClass('animated fadeOut');
+                // $("#dv_formula_show").animateCss('bounce');
+                $('#dv_formula_modify').css("display", "none");
+                $('#dv_formula_show').css("display", "block");
+            });
         });
     </script>
 
@@ -268,6 +298,19 @@
             padding-left: 25px;
             margin-bottom: 25px;
             /*height: 100px;*/
+        }
+        div.dialog_name {
+            display: inline-block;
+            vertical-align: top;
+        }
+        div.btn_close {
+            width: 21px;
+            height: 21px;
+            background-image: url("./css/btn_close.png");
+            display: inline-block;
+            vertical-align: top;
+            cursor: pointer;
+            margin-left: 640px;
         }
         div.dialog_body {
             width: 100%;
@@ -518,231 +561,214 @@
 </head>
 <body>
     <div id = "dialogBg"></div>
+    <div id = "dv_formula">
 
-    <div id = "dv_formula_show" class="formula_dialog">
-    	<!-- 公示列表展示 -->
-        <div class="dialog_top">
-            <div class="dialog_name">公式列表</div>
-            <div class="btn_close" onclick="CloseDiv('dv_Formula', '')"></div>
-        </div>
-        <div class = "dialog_body">
-            <div id = "formula_list_container">
-                <table id = "formula_list_title" class = "formula_list">
-                	<tr>
-                		<th class = "formula_list_title_name">公式名称</th>
-                		<th class = "formula_list_title_formula">公式内容</th>
-                		<th class = "formula_list_title_operate">操作</th>
-                	</tr>
-                </table>
-                <div id = "formula_list_content_container">
-                    <table id = "formula_list_content" class = "formula_list">
-                    	<tr>
-                    		<td class = "formula_list_content_name">公式一</td>
-                    		<td class = "formula_list_content_formula">a+b-c</td>
-                    		<td class = "formula_list_content_operate">编辑 删除</td>
-                    	</tr>
-                    	<tr>
-                    		<td class = "formula_list_content_name">公式二</td>
-                    		<td class = "formula_list_content_formula">a+b-c</td>
-                    		<td class = "formula_list_content_operate">编辑 删除</td>
-                    	</tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式一</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式二</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式一</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式二</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式一</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式二</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式一</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式二</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式一</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式二</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式一</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                        <tr>
-                            <td class = "formula_list_content_name">公式二</td>
-                            <td class = "formula_list_content_formula">a+b-c</td>
-                            <td class = "formula_list_content_operate">编辑 删除</td>
-                        </tr>
-                    </table>
-                </div>
+        <div id = "dv_formula_show" class="formula_dialog">
+    	   <!-- 公示列表展示 -->
+            <div class="dialog_top">
+                <div class="dialog_name">公式列表</div>
+                <div class="btn_close" id = "dv_formula_show_close"></div>
             </div>
-        </div>
-        <div class = "dialog_bottom" id="dv_operate">
-            <button class = "dis_operate_btn" id = "dv_operate_btn_cancel">取消</button>
-            <button class = "dis_operate_btn" id = "dv_operate_btn_add">新建</button>
-        </div>
-    </div>
-
-    <div id = "dv_formula_modify" class = "formula_dialog">
-    	<!-- 公式列表新建与修改 -->
-    	<div class="dialog_top">
-            <span class="dialog_name">参数集合</span>
-            <div class="btn_close" onclick=""></div>
-        </div>
-        <div class = "dialog_body">
-            <div class = "dialog_body_line">
-                <div class = "dialog_body_part">
-            	    <div id = "dis_title">函数及操作符信息</div>
-            	    <div id = "dis_formula">
-                        <table id = "math_formula">
+            <div class = "dialog_body">
+                <div id = "formula_list_container">
+                    <table id = "formula_list_title" class = "formula_list">
+                    	<tr>
+                    		<th class = "formula_list_title_name">公式名称</th>
+                    		<th class = "formula_list_title_formula">公式内容</th>
+                    		<th class = "formula_list_title_operate">操作</th>
+                    	</tr>
+                    </table>
+                    <div id = "formula_list_content_container">
+                        <table id = "formula_list_content" class = "formula_list">
+                        	<tr>
+                        		<td class = "formula_list_content_name">公式一</td>
+                        		<td class = "formula_list_content_formula">a+b-c</td>
+                        		<td class = "formula_list_content_operate">编辑 删除</td>
+                        	</tr>
+                        	<tr>
+                        		<td class = "formula_list_content_name">公式二</td>
+                        		<td class = "formula_list_content_formula">a+b-c</td>
+                        		<td class = "formula_list_content_operate">编辑 删除</td>
+                        	</tr>
                             <tr>
-                                <td>asin(x)</td>
+                                <td class = "formula_list_content_name">公式一</td>
+                                <td class = "formula_list_content_formula">a+b-c</td>
+                                <td class = "formula_list_content_operate">编辑 删除</td>
                             </tr>
                             <tr>
-                                <td>acos(x)</td>
+                                <td class = "formula_list_content_name">公式二</td>
+                                <td class = "formula_list_content_formula">a+b-c</td>
+                                <td class = "formula_list_content_operate">编辑 删除</td>
                             </tr>
                             <tr>
-                                <td>atan(x)</td>
+                                <td class = "formula_list_content_name">公式一</td>
+                                <td class = "formula_list_content_formula">a+b-c</td>
+                                <td class = "formula_list_content_operate">编辑 删除</td>
                             </tr>
                             <tr>
-                                <td>asin(x)</td>
+                                <td class = "formula_list_content_name">公式二</td>
+                                <td class = "formula_list_content_formula">a+b-c</td>
+                                <td class = "formula_list_content_operate">编辑 删除</td>
                             </tr>
                             <tr>
-                                <td>acos(x)</td>
+                                <td class = "formula_list_content_name">公式一</td>
+                                <td class = "formula_list_content_formula">a+b-c</td>
+                                <td class = "formula_list_content_operate">编辑 删除</td>
                             </tr>
                             <tr>
-                                <td>atan(x)</td>
+                                <td class = "formula_list_content_name">公式二</td>
+                                <td class = "formula_list_content_formula">a+b-c</td>
+                                <td class = "formula_list_content_operate">编辑 删除</td>
                             </tr>
                             <tr>
-                                <td>asin(x)</td>
+                                <td class = "formula_list_content_name">公式一</td>
+                                <td class = "formula_list_content_formula">a+b-c</td>
+                                <td class = "formula_list_content_operate">编辑 删除</td>
                             </tr>
                             <tr>
-                                <td>acos(x)</td>
+                                <td class = "formula_list_content_name">公式二</td>
+                                <td class = "formula_list_content_formula">a+b-c</td>
+                                <td class = "formula_list_content_operate">编辑 删除</td>
                             </tr>
                             <tr>
-                                <td>atan(x)</td>
-                            </tr>
                         </table>
                     </div>
                 </div>
-                <div class = "dialog_body_part">
-            	    <div id = "dis_formula_intro"></div>
-                </div>
-            	<div id = "dis_input" class = "dialog_body_part">
-                    <div class = "dis_input_line">
-            	       <button class = "dis_input_btn" id = "dis_input_btn_7">7</button>
-            	       <button class = "dis_input_btn" id = "dis_input_btn_8">8</button>
-            	       <button class = "dis_input_btn" id = "dis_input_btn_9">9</button>
-            	       <button class = "dis_input_btn dis_input_btn_punc" id = "dis_input_btn_/">÷</button>
-                    </div>
-                    <div class = "dis_input_line">
-            	       <button class = "dis_input_btn" id = "dis_input_btn_4">4</button>
-            	       <button class = "dis_input_btn" id = "dis_input_btn_5">5</button>
-            	       <button class = "dis_input_btn" id = "dis_input_btn_6">6</button>
-            	       <button class = "dis_input_btn dis_input_btn_punc" id = "dis_input_btn_*">×</button>
-                    </div>
-                    <div class = "dis_input_line">
-            	        <button class = "dis_input_btn" id = "dis_input_btn_1">1</button>
-            	        <button class = "dis_input_btn" id = "dis_input_btn_2">2</button>
-            	        <button class = "dis_input_btn" id = "dis_input_btn_3">3</button>
-            	        <button class = "dis_input_btn dis_input_btn_punc" id = "dis_input_btn_+">+</button>
-                    </div>
-                    <div class = "dis_input_line">
-            	        <button class = "dis_input_btn" id = "dis_input_btn_0">0</button>
-            	        <button class = "dis_input_btn" id = "dis_input_btn_.">.</button>
-            	        <button class = "dis_input_btn dis_input_btn_sm dis_input_btn_punc" id = "dis_input_btn_(">(</button>
-            	        <button class = "dis_input_btn dis_input_btn_sm dis_input_btn_punc" id = "dis_input_btn_)">)</button>
-            	        <button class = "dis_input_btn dis_input_btn_punc" id = "dis_input_btn_-">-</button>
-                    </div>
-            	</div>
             </div>
-            <div class = "dialog_body_line">
-                <div id = "station_list_container" class = "dialog_body_part">
-                    <table class = "station_list station_list_title">
-                        <tr>
-                            <th class = "station_list_title_data">数据源</th>
-                            <th class = "station_list_title_name">名称</th>
-                            <th class = "station_list_title_value">值</th>
-                        </tr>
-                    </table>
-                    <div class = "station_list_content_container">
-                    	<table class = "station_list" id = "station_list_content">
-                    		<tr>
-                    			<td class = "station_list_content_data">0320000143</td>
-                    			<td class = "station_list_content_name">逆变器N13交流电压</td>
-                    			<td class = "station_list_content_value">404.4</td>
-                    		</tr>
-                    		<tr>
-                    			<td class = "station_list_content_data">0320000144</td>
-                    			<td class = "station_list_content_name">逆变器N13交流电流</td>
-                    			<td class = "station_list_content_value">8.7</td>
-                    		</tr>
-                            <tr>
-                                <td class = "station_list_content_data">0320000145</td>
-                                <td class = "station_list_content_name">逆变器N14交流电流</td>
-                                <td class = "station_list_content_value">398.1</td>
-                            </tr>
-                            <tr>
-                                <td class = "station_list_content_data">0320000146</td>
-                                <td class = "station_list_content_name">逆变器N14交流电流</td>
-                                <td class = "station_list_content_value">9.0</td>
-                            </tr>
-                            <tr>
-                                <td class = "station_list_content_data">0320000147</td>
-                                <td class = "station_list_content_name">逆变器N15交流电流</td>
-                                <td class = "station_list_content_value">400.2</td>
-                            </tr>
-                            <tr>
-                                <td class = "station_list_content_data">0320000148</td>
-                                <td class = "station_list_content_name">逆变器N15交流电流</td>
-                                <td class = "station_list_content_value">9.2</td>
-                            </tr>
-                    	</table>
-                    </div>
-                </div>
-                <div id = "dis_output" class = "dialog_body_part">
-                	<div id = "dis_output_formula" contenteditable = "true" spellcheck = "false" data-value = ""></div>
-                	<div id = "dis_output_result">输出预览：<span id = "dis_output_result_cal">NaN</span></div>
-                </div>
+            <div class = "dialog_bottom" id="dv_operate">
+                <button class = "dis_operate_btn" id = "dv_operate_btn_cancel">取消</button>
+                <button class = "dis_operate_btn" id = "dv_operate_btn_add">新建</button>
             </div>
         </div>
-        <div class = "dialog_bottom">
-        	<button class = "dis_operate_btn" id = "dis_operate_btn_cancel">取消</button>
-            <button class = "dis_operate_btn" id = "dis_operate_btn_save">保存</button>
-            <!-- <button class = "dis_operate_btn" id = "dis_operate_btn_test">测试</button> -->
+    
+        <div id = "dv_formula_modify" class = "formula_dialog">
+    	    <!-- 公式列表新建与修改 -->
+    	    <div class="dialog_top">
+                <span class="dialog_name">参数集合</span>
+                <div class="btn_close" id = "dv_formula_modify_close"></div>
+            </div>
+            <div class = "dialog_body">
+                <div class = "dialog_body_line">
+                    <div class = "dialog_body_part">
+                	    <div id = "dis_title">函数及操作符信息</div>
+                	    <div id = "dis_formula">
+                            <table id = "math_formula">
+                                <tr>
+                                    <td>asin(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>acos(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>atan(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>asin(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>acos(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>atan(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>asin(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>acos(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>atan(x)</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class = "dialog_body_part">
+                	    <div id = "dis_formula_intro"></div>
+                    </div>
+                	<div id = "dis_input" class = "dialog_body_part">
+                        <div class = "dis_input_line">
+                	       <button class = "dis_input_btn" id = "dis_input_btn_7">7</button>
+                	       <button class = "dis_input_btn" id = "dis_input_btn_8">8</button>
+                	       <button class = "dis_input_btn" id = "dis_input_btn_9">9</button>
+                	       <button class = "dis_input_btn dis_input_btn_punc" id = "dis_input_btn_/">÷</button>
+                        </div>
+                        <div class = "dis_input_line">
+                	       <button class = "dis_input_btn" id = "dis_input_btn_4">4</button>
+                	       <button class = "dis_input_btn" id = "dis_input_btn_5">5</button>
+                	       <button class = "dis_input_btn" id = "dis_input_btn_6">6</button>
+                	       <button class = "dis_input_btn dis_input_btn_punc" id = "dis_input_btn_*">×</button>
+                        </div>
+                        <div class = "dis_input_line">
+                	        <button class = "dis_input_btn" id = "dis_input_btn_1">1</button>
+                	        <button class = "dis_input_btn" id = "dis_input_btn_2">2</button>
+                	        <button class = "dis_input_btn" id = "dis_input_btn_3">3</button>
+                	        <button class = "dis_input_btn dis_input_btn_punc" id = "dis_input_btn_+">+</button>
+                        </div>
+                        <div class = "dis_input_line">
+                	        <button class = "dis_input_btn" id = "dis_input_btn_0">0</button>
+                	        <button class = "dis_input_btn" id = "dis_input_btn_.">.</button>
+                	        <button class = "dis_input_btn dis_input_btn_sm dis_input_btn_punc" id = "dis_input_btn_(">(</button>
+                	        <button class = "dis_input_btn dis_input_btn_sm dis_input_btn_punc" id = "dis_input_btn_)">)</button>
+                	        <button class = "dis_input_btn dis_input_btn_punc" id = "dis_input_btn_-">-</button>
+                        </div>
+                	</div>
+                </div>
+                <div class = "dialog_body_line">
+                    <div id = "station_list_container" class = "dialog_body_part">
+                        <table class = "station_list station_list_title">
+                            <tr>
+                                <th class = "station_list_title_data">数据源</th>
+                                <th class = "station_list_title_name">名称</th>
+                                <th class = "station_list_title_value">值</th>
+                            </tr>
+                        </table>
+                        <div class = "station_list_content_container">
+                        	<table class = "station_list" id = "station_list_content">
+                        		<tr>
+                        			<td class = "station_list_content_data">0320000143</td>
+                        			<td class = "station_list_content_name">逆变器N13交流电压</td>
+                        			<td class = "station_list_content_value">404.4</td>
+                        		</tr>
+                        		<tr>
+                        			<td class = "station_list_content_data">0320000144</td>
+                        			<td class = "station_list_content_name">逆变器N13交流电流</td>
+                        			<td class = "station_list_content_value">8.7</td>
+                        		</tr>
+                                <tr>
+                                    <td class = "station_list_content_data">0320000145</td>
+                                    <td class = "station_list_content_name">逆变器N14交流电流</td>
+                                    <td class = "station_list_content_value">398.1</td>
+                                </tr>
+                                <tr>
+                                    <td class = "station_list_content_data">0320000146</td>
+                                    <td class = "station_list_content_name">逆变器N14交流电流</td>
+                                    <td class = "station_list_content_value">9.0</td>
+                                </tr>
+                                <tr>
+                                    <td class = "station_list_content_data">0320000147</td>
+                                    <td class = "station_list_content_name">逆变器N15交流电流</td>
+                                    <td class = "station_list_content_value">400.2</td>
+                                </tr>
+                                <tr>
+                                    <td class = "station_list_content_data">0320000148</td>
+                                    <td class = "station_list_content_name">逆变器N15交流电流</td>
+                                    <td class = "station_list_content_value">9.2</td>
+                                </tr>
+                        	</table>
+                        </div>
+                    </div>
+                    <div id = "dis_output" class = "dialog_body_part">
+                    	<div id = "dis_output_formula" contenteditable = "true" spellcheck = "false" data-value = ""></div>
+                    	<div id = "dis_output_result">输出预览：<span id = "dis_output_result_cal">NaN</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class = "dialog_bottom">
+            	<button class = "dis_operate_btn" id = "dis_operate_btn_cancel">取消</button>
+                <button class = "dis_operate_btn" id = "dis_operate_btn_save">保存</button>
+                <!-- <button class = "dis_operate_btn" id = "dis_operate_btn_test">测试</button> -->
+            </div>
         </div>
     </div>
 </body>
