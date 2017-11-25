@@ -27,12 +27,12 @@
             var anchorOffset = 0;
 
             var dataSource = {
-                "#0320000143": 404.4,
-                "#0320000144": 8.7,
-                "#0320000145": 398.1,
-                "#0320000146": 9.0,
-                "#0320000147": 400.2,
-                "#0320000148": 9.2,
+                "逆变器N13交流电压": 404.4,
+                "逆变器N13交流电流": 8.7,
+                "逆变器N14交流电压": 398.1,
+                "逆变器N14交流电流": 9.0,
+                "逆变器N15交流电压": 400.2,
+                "逆变器N15交流电流": 9.2,
             };
 
             // 自动聚焦
@@ -65,10 +65,10 @@
                 var target = event.target;
                 // 初始化输出内容
                 // var output = "<span class = 'dis_output_source' contenteditable = 'false'>#";
-                var output = " #";
+                var output = " ";
                 // 判断如果点击的是 数据源 这一列，则直接获取其数据源编号，如果不是，则顺着 tr 找到此行的数据源编号。
-                if (target.className != "station_list_content_data") {
-                    output += target.parentElement.firstElementChild.innerText;
+                if (target.className != "station_list_content_name") {
+                    output += target.parentElement.children[1].innerText;
                 }
                 else {
                     output += target.innerText;
@@ -190,13 +190,19 @@
             $("#dis_output_formula").bind('DOMSubtreeModified', function(e) {
                 var formulaText = $(e.target).text();
                 // var formulaTextNoNbsp = formulaText.replace();
-                var formulaTextRep = formulaText.replace(/#\d{1,} /g, function (match) {
+                // 正则表达式说明，要匹配的结果中 (/(?![0-9 ]+$)(?![\+\-\*\/\(\)\.])(^((?!sin|cos|tan).)*$)([\u4e00-\u9fa5\w]+)/g
+                // 1. 不能是纯数字，防止对正常的数字计算进行干扰
+                // 2. 不能是运算符，这样可以通过运算符将字符串隔开，分别进行匹配
+                // 3. 不能是 sin, cos, tan 等特殊运算符
+                // 4. 应该是一串包含汉字，可能包含数字字母的字符串
+                var formulaTextRep = formulaText.replace(/(?![0-9 \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w]+)/g, function (match) {
                     var matchNoNbsp = match.replace(/\s/g, "");
                     return dataSource[matchNoNbsp];
                 });
 
                 try {
-                    var calResult = math.format(math.eval(formulaTextRep), 7);
+                    var formulaTextRepNoNbsp = formulaTextRep.replace(/\s/g, "");
+                    var calResult = math.format(math.eval(formulaTextRepNoNbsp), 7);
                     console.log (calResult);
 
                     if (calResult === "undefined")
@@ -283,10 +289,10 @@
 
         /* 页面的两大模块 开始*/
         div#dv_formula_show {
-            /*display: none;*/
+            display: none;
         }
         div#dv_formula_modify {
-            display: none;
+            /*display: none;*/
         }
         /* 页面的两大模块 结束*/
 
@@ -654,31 +660,31 @@
                 	    <div id = "dis_formula">
                             <table id = "math_formula">
                                 <tr>
-                                    <td>asin(x)</td>
+                                    <td>sin(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>acos(x)</td>
+                                    <td>cos(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>atan(x)</td>
+                                    <td>tan(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>asin(x)</td>
+                                    <td>sin(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>acos(x)</td>
+                                    <td>cos(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>atan(x)</td>
+                                    <td>tan(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>asin(x)</td>
+                                    <td>sin(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>acos(x)</td>
+                                    <td>cos(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>atan(x)</td>
+                                    <td>tan(x)</td>
                                 </tr>
                             </table>
                         </div>
@@ -737,7 +743,7 @@
                         		</tr>
                                 <tr>
                                     <td class = "station_list_content_data">0320000145</td>
-                                    <td class = "station_list_content_name">逆变器N14交流电流</td>
+                                    <td class = "station_list_content_name">逆变器N14交流电压</td>
                                     <td class = "station_list_content_value">398.1</td>
                                 </tr>
                                 <tr>
@@ -747,7 +753,7 @@
                                 </tr>
                                 <tr>
                                     <td class = "station_list_content_data">0320000147</td>
-                                    <td class = "station_list_content_name">逆变器N15交流电流</td>
+                                    <td class = "station_list_content_name">逆变器N15交流电压</td>
                                     <td class = "station_list_content_value">400.2</td>
                                 </tr>
                                 <tr>
