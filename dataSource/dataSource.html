@@ -190,9 +190,9 @@
             $("#dis_output_formula").bind('DOMSubtreeModified', function(e) {
                 var formulaText = $(e.target).text();
                 // var formulaTextNoNbsp = formulaText.replace();
-                // 正则表达式说明，要匹配的结果中 (/(?![0-9 ]+$)(?![\+\-\*\/\(\)\.])(^((?!sin|cos|tan).)*$)([\u4e00-\u9fa5\w]+)/g
+                // 正则表达式说明，要匹配的结果中
                 // 1. 不能是纯数字，防止对正常的数字计算进行干扰
-                // 2. 不能是运算符，这样可以通过运算符将字符串隔开，分别进行匹配
+                // 2. 不能是运算符
                 // 3. 不能是 sin, cos, tan 等特殊运算符
                 // 4. 应该是一串包含汉字，可能包含数字字母的字符串
                 var formulaTextRep = formulaText.replace(/(?![0-9a-z \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w]+)/g, function (match) {
