@@ -24,19 +24,11 @@
             //
             // 记录输入框中的光标位置
             var anchorNode = $("#dis_output_formula")[0];
-            var anchorOffset = 0;
-
-            var dataSource = {
-                "逆变器N13交流电压": 404.4,
-                "逆变器N13交流电流": 8.7,
-                "逆变器N14交流电压": 398.1,
-                "逆变器N14交流电流": 9.0,
-                "逆变器N15交流电压": 400.2,
-                "逆变器N15交流电流": 9.2,
-            };
-
             // 自动聚焦
             anchorNode.focus();
+            var anchorOffset = 0;
+
+
             // 创建 DOM 范围来操纵 DOM
             var insertRange = document.createRange();
 
@@ -60,8 +52,11 @@
 
             /* 点击数据源列表向公式框中添加数据源节点
              */
-            $("#station_list_content tr td").on ("click", function (event) {
+            // $("#station_list_content tr td").on ("click", function (event) {
+
+            $("#station_list_content").on ("click", function (event) {
                 // 获取当前点击事件
+                console.log (event);
                 var target = event.target;
                 // 初始化输出内容
                 // var output = "<span class = 'dis_output_source' contenteditable = 'false'>#";
@@ -182,7 +177,7 @@
 
             // 点击数学公式列表，将数学公式填入输入框
             $("#math_formula tr td").on ("click", function() {
-                console.log (this.innerText);
+                // console.log (this.innerText);
                 insertIntoOutputFormula (this.innerText);
             });
 
@@ -203,7 +198,7 @@
                 try {
                     var formulaTextRepNoNbsp = formulaTextRep.replace(/\s/g, "");
                     var calResult = math.format(math.eval(formulaTextRepNoNbsp), 7);
-                    console.log (calResult);
+                    // console.log (calResult);
 
                     if (calResult === "undefined")
                         $("#dis_output_result_cal").text ("NaN");
@@ -251,6 +246,63 @@
                 $('#dv_formula_modify').css("display", "none");
                 $('#dv_formula_show').css("display", "block");
             });
+
+
+            // 动态载入内容
+            var tableData = [
+            {
+                "data": "0320000143",
+                "name": "逆变器N13交流电压",
+                "value": "404.4"
+            },
+            {
+                "data": "0320000144",
+                "name": "逆变器N13交流电流",
+                "value": "8.7"
+            },
+            {
+                "data": "0320000145",
+                "name": "逆变器N14交流电压",
+                "value": "398.1"
+            },
+            {
+                "data": "0320000146",
+                "name": "逆变器N14交流电流",
+                "value": "9.0"
+            },
+            {
+                "data": "0320000147",
+                "name": "逆变器N15交流电压",
+                "value": "400.2"
+            },
+            {
+                "data": "0320000148",
+                "name": "逆变器N15交流电流",
+                "value": "9.2"
+            }
+            ];
+            // console.log (tableData);
+
+            // var dataSource = {
+            //     "逆变器N13交流电压": 404.4,
+            //     "逆变器N13交流电流": 8.7,
+            //     "逆变器N14交流电压": 398.1,
+            //     "逆变器N14交流电流": 9.0,
+            //     "逆变器N15交流电压": 400.2,
+            //     "逆变器N15交流电流": 9.2,
+            // };
+
+            var dataSource = {};
+            
+            var formulaTable = '';
+            for (var i = 0, len = tableData.length; i < len; i++) {
+                formulaTable += '<tr><td class = "station_list_content_data">' + tableData[i].data + '</td><td class = "station_list_content_name">' + tableData[i].name + '</td><td class = "station_list_content_value">' + tableData[i].value + '</td></tr>';
+                dataSource[tableData[i].name] = tableData[i].value;
+
+            }
+            // console.log ("formulaTable", formulaTable, "dataSource", dataSource);
+
+            $("#station_list_content").html(formulaTable);
         });
     </script>
 
@@ -266,7 +318,6 @@
     <style>
         * {
             /*box-sizing: border-box;*/
-
         }
     	body {
             /*color: white;*/
@@ -360,7 +411,8 @@
             padding: 0;
             font-size: 12px;
             text-align: center;
-            line-height: 28px;
+            line-height: 30px;
+            border-collapse: collapse;
         }
         table#formula_list_title {
             border: 0;
@@ -495,7 +547,8 @@
             padding: 0;
             font-size: 12px;
             text-align: center;
-            line-height: 28px;
+            line-height: 30px;
+            border-collapse: collapse;
         }
         table.station_list_title {
             border: 0;
@@ -731,7 +784,7 @@
                         </table>
                         <div class = "station_list_content_container">
                         	<table class = "station_list" id = "station_list_content">
-                        		<tr>
+                        		<!-- <tr>
                         			<td class = "station_list_content_data">0320000143</td>
                         			<td class = "station_list_content_name">逆变器N13交流电压</td>
                         			<td class = "station_list_content_value">404.4</td>
@@ -760,7 +813,7 @@
                                     <td class = "station_list_content_data">0320000148</td>
                                     <td class = "station_list_content_name">逆变器N15交流电流</td>
                                     <td class = "station_list_content_value">9.2</td>
-                                </tr>
+                                </tr> -->
                         	</table>
                         </div>
                     </div>
