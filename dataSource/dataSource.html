@@ -45,8 +45,6 @@
             };
 
             /* 输入按钮点击事件
-             *
-             *
              */
             $(".dis_input_btn").on ("click", function (event) {
                 // console.log (anchorOffset);
@@ -81,63 +79,16 @@
                 output += " ";
                 // 准备向公式显示区输入
                 formulaContentDOM = $("#dis_output_formula");
-                // 获取公式显示区里原有的内容，存储在 textContent 中。
-                // var textContent = formulaContentDOM.html();
-                // 向 textContent 里注入点击到的数据源编号，并封闭 span。
-                // output += "</span> ";
                 // 调用 insertIntoOutputFormula 方法来插入内容
                 insertIntoOutputFormula (output);
-                // notAnchorNode();
-
-                // console.log ("anchorNode", anchorNode);
-                // console.log ("anchorOffset", anchorOffset);
-
-                // anchorOffset 向后增加一位
-                // anchorOffset += output.length;
-                // 自动聚焦
-                // $("#dis_output_formula").focus();
-                
-
-                // 将增加新数据源编号的 textContent 放入公式显示区。
-                // formulaContentDOM.html(textContent);
-                // outputFormulaGetFocus();
             });
-
-
-
 
             // 在每次输入框失去焦点时，更新 anchorNode 和 anchorOffset 的值，便于下次插入时从光标位置插入。
             $("#dis_output_formula").on("blur", function (event) {
                 // 当公式显示区失去焦点的时候，获取失焦前的光标所在位置，之后的内容要从其中插入。
                 anchorNode = window.getSelection().anchorNode;
                 anchorOffset = window.getSelection().anchorOffset;
-                // console.log ($("#dis_output_formula").data("value"));
-                // $("#dis_output_formula").data("value", "312312312312");
-                // console.log ($("#dis_output_formula").data("value"));
-
-                // 判断原来光标所在位置是否为数据源编号，如果是，则将内容插入在他们后面
-                //
-                //
-
-                // // 使用 DOM Range 来进行内容插入
-                // insertRange.setStart(anchorNode, anchorOffset);
-                // // 初始化插入节点
-                // var nodeTemp = $("<span class = 'dis_output_source' contenteditable = 'false'>#032000143</span>");
-                // // 使用 DOM Range 的方法 insertNode 向原来的光标所在处插入内容
-                // insertRange.insertNode (nodeTemp[0]);
-                // console.log("window.getSelection()", window.getSelection());
-                // console.log ($("#dis_output_formula")[0]);
-                // console.log ("anchorNode", anchorNode, "anchorOffset", anchorOffset);
-                // console.log ("insertRange", insertRange);
-
             });
-
-            // $("#dis_output_formula").on("change", function () {
-                // console.log ("change");
-            // });
-
-            function outputFormulaGetFocus () {
-            }
 
             // 根据光标位置插入内容，同时更新公式显示区显示和公式显示区 value
             // 参数：
@@ -161,30 +112,6 @@
                 // console.log (outputFormula);
             }
 
-            // 该方法旨在实现：向 anchorNode，anchorOffset 所指定的位置插入内容
-            // 参数：insertNodeString 要插入内容的 HTML 字符串
-            // function insertIntoOutputFormula (insertNodeString) {
-                // 使用 DOM Range 来进行内容插入，通过全局变量 anchorNode，anchorOffset 来确定插入位置。
-                // insertRange.setStart(anchorNode, anchorOffset);
-                // 将插入节点的 HTML 字符串转化为节点
-                // var nodeTemp = $(insertNodeString);
-                // 使用 DOM Range 的方法 insertNode 向原来的光标所在处插入内容
-                // insertRange.insertNode (nodeTemp[0]);
-                // console.log ("nodeTemp", nodeTemp);
-                // nodeTemp = undefined;
-                // console.log ("anchorNode", anchorNode);
-                // console.log ("anchorOffset", anchorOffset);
-                // console.log ("insertRange", insertRange);
-            // }
-
-            // 该方法旨在实现：当光标点击在数据源上的时候，防止后面的输入插入到数据源之间，破坏数据源的完整性
-            // 
-
-            // test
-            $("#dis_operate_btn_test").on ("click", function () {
-                outputFormulaGetFocus();
-            });
-
             // 点击数学公式列表，将数学公式填入输入框
             $("#math_formula tr td").on ("click", function() {
                 // console.log (this.innerText);
@@ -204,7 +131,6 @@
                     //     mathFormulaIntro = mathFormula[target.innerText];
                     // }
                 }
-                
             });
             // .on ("mouseout", function (event) {
             //     $("#dis_formula_intro")[0].innerText = mathFormula[target.innerText];
@@ -233,35 +159,23 @@
                     if (calResult === "undefined")
                         $("#dis_output_result_cal").text ("NaN");
                     else
-
-                    // if (!isNaN(calResult))
                         $("#dis_output_result_cal").text (calResult);
-                    // else
-                        // $("#dis_output_result_cal").text ("NaN");
-
                 } catch (e) {
                     // console.log (e.name, e.message);
                     $("#dis_output_result_cal").text ("NaN");
 
                 }
-                // if (math.eval($(e.target).html()))
-
             }); 
-
 
             // 各个按钮的点击事件
             // 公式列表页的 新建 按钮
             $("#dv_operate_btn_add").on ("click", function () {
-                // $('#dv_formula_show').addClass('animated fadeOut');
-                // $("#dv_formula_show").animateCss('bounce');
                 $('#dv_formula_show').css("display", "none");
                 $('#dv_formula_modify').css("display", "block");
             });
             // 公式列表页的 取消 按钮
             // 公式列表页的 X 按钮
             $("#dv_operate_btn_cancel, #dv_formula_show_close").on ("click", function () {
-                // $('#dv_formula_show').addClass('animated fadeOut');
-                // $("#dv_formula_show").animateCss('bounce');
                 $('#dv_formula_show').css("display", "none");
             });
 
@@ -270,12 +184,9 @@
             // 公式修改页的 取消 按钮
             // 公式修改页的 X 按钮
             $("#dis_operate_btn_cancel, #dv_formula_modify_close").on ("click", function () {
-                // $('#dv_formula_show').addClass('animated fadeOut');
-                // $("#dv_formula_show").animateCss('bounce');
                 $('#dv_formula_modify').css("display", "none");
                 $('#dv_formula_show').css("display", "block");
             });
-
 
             // 动态载入内容
             var tableData = [
@@ -310,16 +221,6 @@
                 "value": "9.2"
             }
             ];
-            // console.log (tableData);
-
-            // var dataSource = {
-            //     "逆变器N13交流电压": 404.4,
-            //     "逆变器N13交流电流": 8.7,
-            //     "逆变器N14交流电压": 398.1,
-            //     "逆变器N14交流电流": 9.0,
-            //     "逆变器N15交流电压": 400.2,
-            //     "逆变器N15交流电流": 9.2,
-            // };
 
             var dataSource = {};
             
@@ -327,7 +228,6 @@
             for (var i = 0, len = tableData.length; i < len; i++) {
                 formulaTable += '<tr><td class = "station_list_content_data">' + tableData[i].data + '</td><td class = "station_list_content_name">' + tableData[i].name + '</td><td class = "station_list_content_value">' + tableData[i].value + '</td></tr>';
                 dataSource[tableData[i].name] = tableData[i].value;
-
             }
             // console.log ("formulaTable", formulaTable, "dataSource", dataSource);
 
@@ -769,7 +669,6 @@
                                 <tr>
                                     <td>tan(x)</td>
                                 </tr>
-                                
                             </table>
                         </div>
                     </div>
@@ -857,7 +756,6 @@
             <div class = "dialog_bottom">
             	<button class = "dis_operate_btn" id = "dis_operate_btn_cancel">取消</button>
                 <button class = "dis_operate_btn" id = "dis_operate_btn_save">保存</button>
-                <!-- <button class = "dis_operate_btn" id = "dis_operate_btn_test">测试</button> -->
             </div>
         </div>
     </div>
