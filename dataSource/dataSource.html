@@ -28,10 +28,21 @@
             anchorNode.focus();
             var anchorOffset = 0;
 
-
             // 创建 DOM 范围来操纵 DOM
             var insertRange = document.createRange();
 
+            // 数学公式信息
+            var mathFormula = {
+                "abs(x)": "返回给定数值的绝对值，即不带符号的数值.", 
+                "cos(x)": "返回给定角度的余弦值.", 
+                "exp(x)": "返回 e 的 n 次方.", 
+                "floor(x)": "将数字向下舍入到最接近的整数或最接近的指定基数的倍数.", 
+                "log(x)": "根据给定底数返回数字的对数.", 
+                "max(value1, value2, ...)": "返回给定所有值的最大值", 
+                "min(value1, value2, ...)": "返回给定所有值的最小值", 
+                "sin(x)": "返回给定角度的正弦值.", 
+                "tan(x)": "返回给定角度的正切值."
+            };
 
             /* 输入按钮点击事件
              *
@@ -56,7 +67,6 @@
 
             $("#station_list_content").on ("click", function (event) {
                 // 获取当前点击事件
-                console.log (event);
                 var target = event.target;
                 // 初始化输出内容
                 // var output = "<span class = 'dis_output_source' contenteditable = 'false'>#";
@@ -181,6 +191,25 @@
                 insertIntoOutputFormula (this.innerText);
             });
 
+            // 数学公式介绍区域内容
+            // var mathFormulaIntro = "";
+            // var target = "";
+
+            // 在数学公式列表里悬浮或者点击时，显示相关公式的介绍
+            $("#math_formula").on ("mouseover click", function (event) {
+                target = event.target;
+                if (target.nodeName == "TD")  {
+                    $("#dis_formula_intro")[0].innerText = mathFormula[target.innerText];
+                    // if (event.type == "click") {
+                    //     mathFormulaIntro = mathFormula[target.innerText];
+                    // }
+                }
+                
+            });
+            // .on ("mouseout", function (event) {
+            //     $("#dis_formula_intro")[0].innerText = mathFormula[target.innerText];
+            // });
+
             // 监听公式显示区的变化，并将计算结果输出到预览区
             $("#dis_output_formula").bind('DOMSubtreeModified', function(e) {
                 var formulaText = $(e.target).text();
@@ -189,9 +218,10 @@
                 // 1. 不能是纯数字，防止对正常的数字计算进行干扰
                 // 2. 不能是运算符
                 // 3. 不能是 sin, cos, tan 等特殊运算符
-                // 4. 应该是一串包含汉字，可能包含数字字母的字符串
-                var formulaTextRep = formulaText.replace(/(?![0-9a-z \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w]+)/g, function (match) {
-                    var matchNoNbsp = match.replace(/\s/g, "");
+                // 4. 应该是一串包含汉字，可能包含数字字母空格的字符串
+                var formulaTextRep = formulaText.replace(/(?![0-9a-z \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w ]+)/g, function (match) {
+                    // 过滤掉结尾的空格
+                    var matchNoNbsp = match.replace(/ *$/g, "");
                     return dataSource[matchNoNbsp];
                 });
 
@@ -217,7 +247,6 @@
                 // if (math.eval($(e.target).html()))
 
             }); 
-
 
 
             // 各个按钮的点击事件
@@ -252,32 +281,32 @@
             var tableData = [
             {
                 "data": "0320000143",
-                "name": "逆变器N13交流电压",
+                "name": "逆变器 N13交流电压",
                 "value": "404.4"
             },
             {
                 "data": "0320000144",
-                "name": "逆变器N13交流电流",
+                "name": "逆变器 N13交流电流",
                 "value": "8.7"
             },
             {
                 "data": "0320000145",
-                "name": "逆变器N14交流电压",
+                "name": "逆变器 N14交流电压",
                 "value": "398.1"
             },
             {
                 "data": "0320000146",
-                "name": "逆变器N14交流电流",
+                "name": "逆变器 N14交流电流",
                 "value": "9.0"
             },
             {
                 "data": "0320000147",
-                "name": "逆变器N15交流电压",
+                "name": "逆变器 N15交流电压",
                 "value": "400.2"
             },
             {
                 "data": "0320000148",
-                "name": "逆变器N15交流电流",
+                "name": "逆变器 N15交流电流",
                 "value": "9.2"
             }
             ];
@@ -500,9 +529,10 @@
             width: 230px;
             height: 165px;
             border: 1px solid #e5e5e5;
-            padding:;
+            padding: 5px 10px;
             border-radius: 5px;
             box-sizing: border-box;
+            font-size: 12px;
         }
         div#dis_input {
             width: 350px;
@@ -713,32 +743,33 @@
                 	    <div id = "dis_formula">
                             <table id = "math_formula">
                                 <tr>
-                                    <td>sin(x)</td>
+                                    <td>abs(x)</td>
                                 </tr>
                                 <tr>
                                     <td>cos(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>tan(x)</td>
+                                    <td>exp(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>floor(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>log(x)</td>
+                                </tr>
+                                <tr>
+                                    <td>max(value1, value2, ...)</td>
+                                </tr>
+                                <tr>
+                                    <td>min(value1, value2, ...)</td>
                                 </tr>
                                 <tr>
                                     <td>sin(x)</td>
                                 </tr>
                                 <tr>
-                                    <td>cos(x)</td>
-                                </tr>
-                                <tr>
                                     <td>tan(x)</td>
                                 </tr>
-                                <tr>
-                                    <td>sin(x)</td>
-                                </tr>
-                                <tr>
-                                    <td>cos(x)</td>
-                                </tr>
-                                <tr>
-                                    <td>tan(x)</td>
-                                </tr>
+                                
                             </table>
                         </div>
                     </div>
