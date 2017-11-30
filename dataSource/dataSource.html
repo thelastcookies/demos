@@ -44,6 +44,12 @@
                 "tan(x)": "返回给定角度的正切值."
             };
 
+            // 数据源信息
+            var dataSource = {};
+
+            // 当前正在操作的公式 id
+            var formulaID = "";
+
             /* 输入按钮点击事件
              */
             $(".dis_input_btn").on ("click", function (event) {
@@ -148,7 +154,8 @@
                 var formulaTextRep = formulaText.replace(/(?![0-9a-z \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w ]+)/g, function (match) {
                     // 过滤掉结尾的空格
                     var matchNoNbsp = match.replace(/ *$/g, "");
-                    return dataSource[matchNoNbsp];
+                    if (dataSource[matchNoNbsp])
+                        return dataSource[matchNoNbsp].value;
                 });
 
                 try {
@@ -170,25 +177,131 @@
             // 各个按钮的点击事件
             // 公式列表页的 新建 按钮
             $("#dv_operate_btn_add").on ("click", function () {
-                $('#dv_formula_show').css("display", "none");
-                $('#dv_formula_modify').css("display", "block");
+                formulaID = Date.now().toString();
+                $('#dv_formula_show').hide();
+                $('#dv_formula_modify').show();
             });
+
+            // 公式列表页的 修改 删除 按钮
+            $("#formula_list_content").on ("click", function (event) {
+                var target = event.target;
+                // 根据点击的单元行获取公式的 id
+                formulaID = target.parentElement.parentElement.firstElementChild.innerText;
+
+                // 公式编辑界面
+                if (target.className == "formula_list_content_modify") {
+                    $("#dis_output_formula")[0].innerText = getFromFormulaList(dataFormula, formulaID, "desc");
+                    $("#confirm_formula_title").val(getFromFormulaList(dataFormula, formulaID, "title"));
+                    $("#dv_formula_show").hide();
+                    $("#dv_formula_modify").show();
+                }
+                else if (target.className == "formula_list_content_del"){
+                    delInForlumaList(dataFormula, formulaID);
+                    updateFormulaList(dataFormula);
+                }
+            });
+
             // 公式列表页的 取消 按钮
             // 公式列表页的 X 按钮
             $("#dv_operate_btn_cancel, #dv_formula_show_close").on ("click", function () {
-                $('#dv_formula_show').css("display", "none");
+                $('#dv_formula_show').hide();
             });
 
-            // 公式修改页的 保存 按钮
+            // 公式编辑页的 保存 按钮
+            $("#dis_operate_btn_save").on ("click", function () {
+                var temp = $("#dis_output_formula");
+                $("#dialog_confirm_body_formula")[0].innerText = temp[0].innerText;
+                $("#dialogBg_confirm").show();
+                $("#dv_formula_confirm").show();
+                $("#confirm_formula_title").focus();
+            });
             
-            // 公式修改页的 取消 按钮
-            // 公式修改页的 X 按钮
+            // 公式编辑页的 取消 按钮
+            // 公式编辑页的 X 按钮
             $("#dis_operate_btn_cancel, #dv_formula_modify_close").on ("click", function () {
-                $('#dv_formula_modify').css("display", "none");
-                $('#dv_formula_show').css("display", "block");
+                $('#dv_formula_modify').hide();
+                $('#dv_formula_show').show();
             });
 
-            // 动态载入内容
+            // 公式确认页的 确认 按钮
+            //
+            $("#confirm_btn_save").on ("click", function() {
+                var formulaDesc = $("#dialog_confirm_body_formula")[0].innerText;
+                var formulaTextRep = formulaDesc.replace(/(?![0-9a-z \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w ]+)/g, function (match) {
+                    // 过滤掉结尾的空格
+                    var matchNoNbsp = match.replace(/ *$/g, "");
+                    if (dataSource[matchNoNbsp])
+                        return "#" + dataSource[matchNoNbsp].data;
+                });
+                var formulaTextRepNoNbsp = formulaTextRep.replace(/\s/g, "");
+
+                // 拼装 ajax 数据 data
+                var data = {"title": $("#confirm_formula_title").val(), "connect": formulaTextRepNoNbsp, "desc": formulaDesc, "id": formulaID, "mid": ""};
+
+
+
+                for (var i = 0, len = dataFormula.length; i < len; i++) {
+                    // 状态为编辑
+                    if (dataFormula[i].id == formulaID) {
+                        setFormulaList (dataFormula, formulaID, "title", data.title);
+                        setFormulaList (dataFormula, formulaID, "connect", data.connect);
+                        setFormulaList (dataFormula, formulaID, "desc", data.desc);
+                        updateFormulaList(dataFormula);
+
+                        // $.ajax ({});
+                        // 隐藏确认、编辑对话框以及背景
+                        $("#dialogBg_confirm").hide();
+                        $("#dv_formula_confirm").hide();
+                        $("#dv_formula_modify").hide();
+                        // 清空输入
+                        $("#dis_output_formula")[0].innerText = "";
+                        $("#confirm_formula_title").val("");
+                        // 显示公式列表界面
+                        $("#dv_formula_show").show();
+                        return ;
+                    }
+                }
+                // 在已存在的公式列表中没有找到该 id 的相关信息，所以状态为新增
+                // 将新建的公式插入公式列表信息中
+                dataFormula.push(data);
+                // 使用 方法更新公式列表页
+                updateFormulaList(dataFormula);
+
+                // $.ajax({
+                //     url: '@Url.Content("~/History/AddFormula")',
+                //     data: data,
+                //     type: 'post',
+                //     dataType: 'json',
+                //     timeout: 10000,
+                //     success: function (data) {
+                    // ajax 请求返回之后
+                        // 隐藏确认、编辑对话框以及背景
+                        $("#dialogBg_confirm").hide();
+                        $("#dv_formula_confirm").hide();
+                        $("#dv_formula_modify").hide();
+                        // 清空输入
+                        $("#dis_output_formula")[0].innerText = "";
+                        $("#confirm_formula_title").val("");
+                        // 显示公式列表界面
+                        $("#dv_formula_show").show();
+                            
+
+            //          },
+            //          error: function (XMLHttpRequset, textStatus, errorThrown) {
+            //          }
+            //      });
+                console.log (data);
+            });
+
+            // 公式确认页的 取消 按钮
+            //
+            $("#confirm_btn_cancel").on ("click", function () {
+                $("#dialogBg_confirm").hide();
+                $("#dv_formula_confirm").hide();
+            });
+
+
+            // 动态载入数据源信息
             var tableData = [
             {
                 "data": "0320000143",
@@ -221,17 +334,101 @@
                 "value": "9.2"
             }
             ];
-
-            var dataSource = {};
             
             var formulaTable = '';
             for (var i = 0, len = tableData.length; i < len; i++) {
                 formulaTable += '<tr><td class = "station_list_content_data">' + tableData[i].data + '</td><td class = "station_list_content_name">' + tableData[i].name + '</td><td class = "station_list_content_value">' + tableData[i].value + '</td></tr>';
-                dataSource[tableData[i].name] = tableData[i].value;
+                var tempObj = {"data": tableData[i].data, "value": tableData[i].value};
+                dataSource[tableData[i].name] = tempObj;
             }
-            // console.log ("formulaTable", formulaTable, "dataSource", dataSource);
+            // console.log ("formulaTable", formulaTable);
+            console.log ("dataSource", dataSource);
 
             $("#station_list_content").html(formulaTable);
+
+            // 动态载入公式信息
+            var dataFormula = [
+            {
+                "title": "test1",
+                "connect": "1+#0320000143",
+                "desc": "1 + 逆变器 N13交流电压",
+                "id": "1512009713471",
+                "mid": ""
+            },
+            {
+                "title": "test2",
+                "connect": "#0320000143+#0320000144",
+                "desc": "逆变器 N13交流电压 + 逆变器 N13交流电流",
+                "id": "1512010473419",
+                "mid": ""
+            }];
+
+            // 储存所有公式信息,加载公式
+            updateFormulaList(dataFormula);
+
+            // 根据公式信息 dataFormula 来刷新公式区
+            function updateFormulaList (dataFormula) {
+                var formulaListDiv = $("#formula_list_content");
+                var formulaListHtml = "";
+
+                for (var i = 0, len = dataFormula.length; i < len; i++) {
+                    formulaListHtml += '<tr><td class="formula_list_content_id">' + dataFormula[i].id + '</td><td class="formula_list_content_name">' + dataFormula[i].title + '</td><td class="formula_list_content_formula">' + dataFormula[i].desc + '</td><td class="formula_list_content_operate"><span class = "formula_list_content_modify">编辑</span> <span class = "formula_list_content_del">删除</span></td></tr>';
+                }
+                formulaListDiv.html(formulaListHtml);
+            }
+
+            /** 根据公式 id 从公式信息 dataFormula 中获取 getSth 所指定的信息并返回
+             *  formulaID 表示要操作的公式 id
+             *  getSth 表示要取到的公式项
+             */
+            function getFromFormulaList (dataFormula, formulaID, getSth) {
+                try {
+                    for (var i = 0, len = dataFormula.length; i < len; i++) {
+                        if (dataFormula[i].id == formulaID) {
+                            return dataFormula[i][getSth];
+                        }
+                    }
+                } catch (e) {
+                    console.error ("获取公式信息指定参数错误", e.name);
+                };
+            }
+
+            /** 根据公式 id 从公式信息 dataFormula 中获取 getSth 所指定的信息
+             *  formulaID 表示要操作的公式 id
+             *  setSth 表示要设置的公式项
+             *  setValue 表示要设置的公式项的值
+             */
+            function setFormulaList (dataFormula, formulaID, setSth, setValue) {
+                try {
+                    for (var i = 0, len = dataFormula.length; i < len; i++) {
+                        if (dataFormula[i].id == formulaID) {
+                            dataFormula[i][setSth] = setValue;
+                        }
+                    }
+                } catch (e) {
+                    console.error ("设置公式信息指定参数错误", e.name);
+                };
+            }
+
+            /** 根据公式 id 从公式信息 dataFormula 中删除相应公式项
+             *  formulaID 表示要操作的公式 id
+             *  返回被删除的公式项对象
+             */
+            function delInForlumaList (dataFormula, formulaID) {
+                try {
+                    for (var i = 0, len = dataFormula.length; i < len; i++) {
+                        if (dataFormula[i].id == formulaID) {
+                            return dataFormula.splice(i, 1);
+                        }
+                    }
+                } catch (e) {
+                    console.error ("找不到指定的公式项");
+                }
+            }
+
+            // 下面是一些页面跳转的显示隐藏样式 
+            // 从公式列表页跳转到公式编辑/新建页
+            // 从公式编辑/新建也跳转到公式列表页
         });
     </script>
 
@@ -255,6 +452,34 @@
             -moz-user-select:none;
             -ms-user-select:none;
             user-select:none;
+            width: 100%;
+            height: 100%;
+
+        }
+        div#dv_formula {
+            width: 800px;
+            height: 465px;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+
+            margin-left: -400px;
+            margin-top: -232.5px;
+        }
+        div#dialogBg {
+
+        }
+        div#dialogBg_confirm {
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            opacity: .3;
+            filter: alpha(opacity=30);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10001;
+            display: none;
         }
     	div.formula_dialog {
     		width: 800px;
@@ -269,10 +494,10 @@
 
         /* 页面的两大模块 开始*/
         div#dv_formula_show {
-            display: none;
+            /*display: none;*/
         }
         div#dv_formula_modify {
-            /*display: none;*/
+            display: none;
         }
         /* 页面的两大模块 结束*/
 
@@ -360,6 +585,12 @@
             border: 0;
             background-color: #e5e5e5;
         }
+        table#formula_list_content tr:last-child {
+            border-bottom: 1px solid #e5e5e5;
+        }
+        td.formula_list_content_id {
+            display: none;
+        }
         th.formula_list_title_name,
         td.formula_list_content_name {
             width: 30%;
@@ -372,6 +603,11 @@
         td.formula_list_content_operate {
             width: 20%;
         }
+        span.formula_list_content_modify,
+        span.formula_list_content_del{
+            cursor: pointer;
+        }
+
         /* 以上为 dv_formula_show 界面的相关样式 */
         /* 以下为 dv_formula_modify 界面的相关样式 */
         /* dv_formula_modify 页面中 dialog_body 样式 开始*/
@@ -506,6 +742,7 @@
         td.station_list_content_name {
             width: 50%;
         }
+
         th.station_list_title_value,
         td.station_list_content_value {
             width: 20%;
@@ -544,16 +781,86 @@
             line-height: 30px;
         }
         /* 公式显示区和结果预览 结束 */
+        /* 点击保存之后的确认界面 开始 */
+        div.dv_formula_confirm {
+            width: 400px;
+            height: 247.2px;
+            border: solid 1px #e5e5e5;
+            box-sizing: border-box;
+            background-color: #fff;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: -200px;
+            margin-top: -123.6px;
+            z-index: 10001;
+            display: none;
+        }
+        div.dialog_confirm_top {
+            padding: 15px 15px 0 25px;
+            font-size: 18px;
+            line-height: 18px;
+            box-sizing: border-box;
+        }
+        div.dialog_confirm_body {
+            height: 174.2px;
+            box-sizing: border-box;
+            padding: 15px;
+        }
+        div.dialog_confirm_body_name {
+            height: 72.1px;
+            box-sizing: border-box;
+            padding: 5px;
+        }
+        div.dialog_confirm_body_name_title {
+            font-size: 12px;
+            line-height: 18px;
+        }
+        div.dialog_confirm_body_name_input {
+
+        }
+        input#confirm_formula_title {
+            border: 0;            
+            border-bottom: 1px solid #e5e5e5;
+            width: 300px;
+            height: 30px;
+            margin: 5px 20px;
+            font-size: 15px;
+            line-height: 15px;
+            padding: 1px 15px;
+        }
+        input#confirm_formula_title:focus {
+            box-shadow: 1px;
+            outline: none;
+        }
+        div.dialog_confirm_body_formula {
+            height: 72.1px;
+            box-sizing: border-box;
+            font-size: 12px;
+            line-height: 18px;
+            border: solid 1px #e5e5e5;
+            background-color: #efefef;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        div.dialog_confirm_bottom {
+            height: 40px;
+            padding-left: 225px;
+            box-sizing: border-box;
+
+        }
+        /* 点击保存之后的确认界面 结束 */
         /* 以上为 dv_formula_modify 界面的相关样式 */
     </style>
 
 </head>
 <body>
     <div id = "dialogBg"></div>
+    <div id = "dialogBg_confirm"></div>
     <div id = "dv_formula">
 
         <div id = "dv_formula_show" class="formula_dialog">
-    	   <!-- 公示列表展示 -->
+    	   <!-- 公式列表展示 -->
             <div class="dialog_top">
                 <div class="dialog_name">公式列表</div>
                 <div class="btn_close" id = "dv_formula_show_close"></div>
@@ -569,57 +876,6 @@
                     </table>
                     <div id = "formula_list_content_container">
                         <table id = "formula_list_content" class = "formula_list">
-                        	<tr>
-                        		<td class = "formula_list_content_name">公式一</td>
-                        		<td class = "formula_list_content_formula">a+b-c</td>
-                        		<td class = "formula_list_content_operate">编辑 删除</td>
-                        	</tr>
-                        	<tr>
-                        		<td class = "formula_list_content_name">公式二</td>
-                        		<td class = "formula_list_content_formula">a+b-c</td>
-                        		<td class = "formula_list_content_operate">编辑 删除</td>
-                        	</tr>
-                            <tr>
-                                <td class = "formula_list_content_name">公式一</td>
-                                <td class = "formula_list_content_formula">a+b-c</td>
-                                <td class = "formula_list_content_operate">编辑 删除</td>
-                            </tr>
-                            <tr>
-                                <td class = "formula_list_content_name">公式二</td>
-                                <td class = "formula_list_content_formula">a+b-c</td>
-                                <td class = "formula_list_content_operate">编辑 删除</td>
-                            </tr>
-                            <tr>
-                                <td class = "formula_list_content_name">公式一</td>
-                                <td class = "formula_list_content_formula">a+b-c</td>
-                                <td class = "formula_list_content_operate">编辑 删除</td>
-                            </tr>
-                            <tr>
-                                <td class = "formula_list_content_name">公式二</td>
-                                <td class = "formula_list_content_formula">a+b-c</td>
-                                <td class = "formula_list_content_operate">编辑 删除</td>
-                            </tr>
-                            <tr>
-                                <td class = "formula_list_content_name">公式一</td>
-                                <td class = "formula_list_content_formula">a+b-c</td>
-                                <td class = "formula_list_content_operate">编辑 删除</td>
-                            </tr>
-                            <tr>
-                                <td class = "formula_list_content_name">公式二</td>
-                                <td class = "formula_list_content_formula">a+b-c</td>
-                                <td class = "formula_list_content_operate">编辑 删除</td>
-                            </tr>
-                            <tr>
-                                <td class = "formula_list_content_name">公式一</td>
-                                <td class = "formula_list_content_formula">a+b-c</td>
-                                <td class = "formula_list_content_operate">编辑 删除</td>
-                            </tr>
-                            <tr>
-                                <td class = "formula_list_content_name">公式二</td>
-                                <td class = "formula_list_content_formula">a+b-c</td>
-                                <td class = "formula_list_content_operate">编辑 删除</td>
-                            </tr>
-                            <tr>
                         </table>
                     </div>
                 </div>
@@ -758,6 +1014,29 @@
                 <button class = "dis_operate_btn" id = "dis_operate_btn_save">保存</button>
             </div>
         </div>
+        
     </div>
+    <div id = "dv_formula_confirm" class = "dv_formula_confirm" >
+            <div class = "dialog_confirm_top">
+                确认保存
+            </div>
+            <div class = "dialog_confirm_body">
+                <div class = "dialog_confirm_body_name">
+                    <div class = "dialog_confirm_body_name_title">
+                        请输入公式名称：
+                    </div>
+                    <div class = "dialog_confirm_body_name_input">
+                        <input type = "text" name = "" id = "confirm_formula_title" spellcheck = "false" />
+                    </div>
+                </div>
+                <div class = "dialog_confirm_body_formula" id = "dialog_confirm_body_formula">
+
+                </div>
+            </div>
+            <div class = "dialog_confirm_bottom">
+                <button class = "dis_operate_btn" id = "confirm_btn_cancel">取消</button>
+                <button class = "dis_operate_btn" id = "confirm_btn_save">保存</button>
+            </div>
+        </div>
 </body>
 </html>
