@@ -550,7 +550,7 @@
 
             getSrceenWH();//获取页面宽度，高度
             SearchTree();
-            
+
 
             //$("#btn_save").click(function () {
             //    var box = 300;
@@ -616,7 +616,7 @@
                 name = name.replace('undefined', '');
                 point = point.replace('undefined', '');
                 pid = pid.replace('undefined', '');
-            
+
                 if (name == '') {
                     //alert('请选择测点');
                     $("#dv_Formula_left_list").html("");
@@ -701,46 +701,38 @@
 
         }
 
-        function updatepoint() {
-            $.post('@Url.Content("~/History/Updatetree")', {  }, function (data) {
-                $.get('@Url.Content("~/File/Tree.json")', {}, function (data) {
-                    var zNodes = eval(data.tree);
-                    var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
 
-                }, 'json');
-            }, 'json');
-        }
 
-            function LoadTree() {
+        function LoadTree() {
             $.ajax({
                 type:"GET",
                 url: '@Url.Content("~/File/Tree.json")',
-            cache:false,
-            dataType:"json",
-            success:function (data){
-                var zNodes = eval(data.tree);
-                var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
-                var id = GetCookie('id');           //模板编码
-                $.post('@Url.Content("~/History/GetZtree")', { id: id }, function (data) {
-                    point = data.tree;
-                    console.log("页面刚加载时获取的point值:", point);
-                    var _nodesplit = data.tree.split(',');
-                    var treeObj = $.fn.zTree.getZTreeObj("tree");
-                    for (var i = 0; i < _nodesplit.length; i++) {
+                cache:false,
+                dataType:"json",
+                success:function (data){
+                    var zNodes = eval(data.tree);
+                    var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
+                    var id = GetCookie('id');           //模板编码
+                    $.post('@Url.Content("~/History/GetZtree")', { id: id }, function (data) {
+                        point = data.tree;
+                        console.log("页面刚加载时获取的point值:", point);
+                        var _nodesplit = data.tree.split(',');
+                        var treeObj = $.fn.zTree.getZTreeObj("tree");
+                        for (var i = 0; i < _nodesplit.length; i++) {
 
-                        var _node = treeObj.getNodeByParam("id", _nodesplit[i], null);
+                            var _node = treeObj.getNodeByParam("id", _nodesplit[i], null);
 
-                        treeObj.checkNode(_node, true, true);
+                            treeObj.checkNode(_node, true, true);
 
-                        var parent = _node.getParentNode();
-                        if (!parent.open) {
-                            treeObj.expandNode(parent, true, true);
+                            var parent = _node.getParentNode();
+                            if (!parent.open) {
+                                treeObj.expandNode(parent, true, true);
+                            }
                         }
-                    }
 
-                }, 'json');
-            }
-        });
+                    }, 'json');
+                }
+            });
         }
 
         function GetLineY(list) {
@@ -1174,7 +1166,7 @@
                 }, 'json');
             });
             /* 公式编辑 */
-            
+
 
             $("#btn_Formula").click(function () {
                 $('#dialogBg').fadeIn();
@@ -1186,7 +1178,7 @@
                 //console.log("point:", point);
                 //var pointArray = point.split(",");
                 //console.log(pointArray);
-                
+
                 @*$.post('@Url.Content("~/History/LineShow")',
                     {
                         point: point,
@@ -1335,6 +1327,8 @@
                 // 存储了绘制当前公式所需要的节点数据
                 var dataPointList = {};
                 var dataPointFormula = {};
+                dataPointFormula.list = [];
+                dataPointFormula.yAxis = [];
 
                 // 当前正在操作的公式 id
                 var formulaID = "";
@@ -1440,7 +1434,7 @@
                     // 2. 不能是运算符
                     // 3. 不能是 sin, cos, tan 等特殊运算符
                     // 4. 应该是一串包含汉字，可能包含数字字母的字符串
-                    // 先替换不符合规则的 - 
+                    // 先替换不符合规则的 -
                     var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
                         return "&";
                     });
@@ -1512,7 +1506,7 @@
                             }
 
                         }
-                        
+
                         console.log("formulaPointArray:", formulaPointArray);
                         if (formulaPointArray.length > 0) {
                             formulaPointStr = formulaPointArray.join(",");
@@ -1606,11 +1600,11 @@
                     }
                     // 展示公式
                     for (var i = 0, len = dataFormula.length; i < len; i++) {
-                        
+
                         if (dataFormula[i].check == 1) {
                             var flag = true;
                             for (var j = 0, lenj = dataPointList.list.length; j < lenj; j++) {
-                                // 表示 当前节点已存在 
+                                // 表示 当前节点已存在
                                 if (dataFormula[i].title == dataPointList.list[j].name) {
                                     flag = false;
                                     dataPointList.list[j].data = formulaCal(dataFormula[i].desc, dataPointList);
@@ -1631,8 +1625,8 @@
                                 yAxisItem["title"] = "{text:''}";
                                 yAxisItem["index"] = dataPointList.yAxis.length;
 
-                                dataPointList.list.push(listItem);
-                                dataPointList.yAxis.push(yAxisItem);
+                                dataPointFormula.list.push(listItem);
+                                dataPointFormula.yAxis.push(yAxisItem);
                             }
                         }
                         else {
@@ -1644,9 +1638,12 @@
                             }
                         }
                     }
+                    var dataPointOutPut = dataPointList;
+                    dataPointOutPut.list.concat(dataPointFormula.list);
+                    dataPointOutPut.yAxis.concat(dataPointFormula.yAxis);
                     console.log("画图前的dataPointList", dataPointList);
                     // huatu
-                    GetLine(dataPointList);
+                    GetLine(dataPointOutPut);
 
                     //////
                 });
@@ -1675,7 +1672,7 @@
                     var formulaDesc = $("#dialog_confirm_body_formula")[0].innerText;
                     var formulaPointArray = [];
                     var formulaText = $("#dialog_confirm_body_formula")[0].innerText;
-                    // 先替换不符合规则的 - 
+                    // 先替换不符合规则的 -
                     var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
                         return "&";
                     });
@@ -1754,6 +1751,16 @@
                     $("#dialogBg_confirm").hide();
                     $("#dv_formula_confirm").hide();
                 });
+
+                // 更新测点按钮
+                @*$("#btn_chart").on("click", function () {
+                    $.post('@Url.Content("~/History/Updatetree")', {  }, function (data) {
+                        $.get('@Url.Content("~/File/Tree.json")', {}, function (data) {
+                            var zNodes = eval(data.tree);
+                            var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
+                        }, 'json');
+                    }, 'json');
+                });*@
 
                 // 根据数据源信息 tableData 更新数据源列表，并且返回处理后的 数据源信息
                 function updateDataSourceList(dataSource) {
@@ -1841,7 +1848,7 @@
                 /**
                  * 根据传入的公示内容（描述），与公式节点的数据，返回一个计算好的结果数组
                  * formulaText：传入的公式描述
-                 * 
+                 *
                  */
                 function formulaCal(formulaText, dataPointList) {
                     // 此 i 用来计数
@@ -1895,7 +1902,7 @@
                         return "-";
                     });
 
-                    console.log("formulaResult:", formulaResult);
+                    // console.log("formulaResult:", formulaResult);
 
                     var formulaFinal = formulaResult.replace(/\s/g, "");
                     // x1+x2+x3
@@ -1914,7 +1921,7 @@
                     for (var i = 0, len = xAxis.length; i < len; i++) {
                         resultList[i] = [xAxis[i], parseInt(valueResult[i])];
                     }
-                    console.log("计算结果", resultList);
+                    // console.log("计算结果", resultList);
                     return resultList;
                 }
 
@@ -2021,8 +2028,36 @@
                             console.log("页面刚加载时获取的原勾选的点的数据源:", dataSource);
                             dataPointList = data;
                             dataPointList.tb = "";
+                            dataPointList.list.splice(dataSource.length, dataPointList.list.length - dataSource.length);
+                            dataPointList.yAxis.splice(dataSource.length, dataPointList.yAxis.length - dataSource.length);
+
                             console.log("页面刚加载时获取的绘图所用数据", dataPointList);
-                            // updateDataSourceList(dataSource);
+                            // 初始化公式曲线
+                            for (var i = 0, len = dataFormula.length; i < len; i++) {
+                                if (dataFormula[i].check == 1) {
+                                    var listItem = {};
+                                    var resultList = formulaCal(dataFormula[i].desc, dataPointList);
+                                    listItem["formulaID"] = dataFormula[i].id;
+                                    listItem["data"] = resultList;
+                                    listItem["name"] = dataFormula[i].title;
+                                    listItem["yAxis"] = dataPointList.list[dataPointList.list.length - 1].yAxis + 1;
+                                    listItem["_colorIndex"] = listItem["yAxis"];
+                                    listItem["_symbolIndex"] = listItem["yAxis"];
+
+                                    var yAxisItem = {};
+                                    yAxisItem["lineColor"] = lineColor.slice(dataPointList.yAxis.length, dataPointList.yAxis.length + 1).join("");
+                                    yAxisItem["lineWidth"] = 1;
+                                    yAxisItem["title"] = "{text:''}";
+                                    yAxisItem["index"] = dataPointList.yAxis.length;
+
+                                    dataPointFormula.list.push(listItem);
+                                    dataPointFormula.yAxis.push(yAxisItem);
+                                    var dataPointOutPut = dataPointList;
+                                    dataPointOutPut.list.concat(dataPointFormula.list);
+                                    dataPointOutPut.yAxis.concat(dataPointFormula.yAxis);
+                                    console.log("画图前的dataPointList", dataPointList);
+                                }
+                            }
 
                             $("#dv_list").html(data.formulaList);
 
@@ -2349,7 +2384,7 @@
                     <option value="1">时</option>
                 </select>
 
-                <div id="btn_chart" href="#" class="button_save" data-options="iconCls:'icon-save'" style="width:80px;margin-left:2px;" onclick="updatepoint()">更新测点</div>
+                <div id="btn_chart" href="#" class="button_save" data-options="iconCls:'icon-save'" style="width:80px;margin-left:2px;">更新测点</div>
                 <div id="btn_save" href="#" class="button_save" data-options="iconCls:'icon-save'" style="margin-left:2px;">保存</div>
                 <div id="btn_print" href="#" class="button_save" data-options="iconCls:'icon-save'" style="margin-left:2px;">打印</div>
                 <div id="btn_Formula" href="#" class="button_save" data-options="iconCls:'icon-save'" style="margin-left:2px;">公式</div>
