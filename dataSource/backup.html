@@ -164,13 +164,15 @@
             border: 0;
         }
 
-        table#formula_list_content tr:nth-child(2n) {
-            border: 0;
-            background-color: #e5e5e5;
-        }
-        table#formula_list_content tr:last-child {
-            border-bottom: 1px solid #e5e5e5;
-        }
+            table#formula_list_content tr:nth-child(2n) {
+                border: 0;
+                background-color: #e5e5e5;
+            }
+
+            table#formula_list_content tr:last-child {
+                border-bottom: 1px solid #e5e5e5;
+            }
+
         td.formula_list_content_id {
             display: none;
         }
@@ -189,13 +191,16 @@
         td.formula_list_content_operate {
             width: 10%;
         }
+
         th.formula_list_title_check,
         td.formula_list_content_check {
             width: 10%;
         }
+
         input.formula_list_content_check_val {
             vertical-align: middle;
         }
+
         span.formula_list_content_modify,
         span.formula_list_content_del {
             cursor: pointer;
@@ -470,6 +475,7 @@
             padding-left: 225px;
             box-sizing: border-box;
         }
+
         div#dialogBg_confirm {
             width: 100%;
             height: 100%;
@@ -499,6 +505,7 @@
             display: none;
             z-index: 20001;
         }
+
         div.tem_dialog_top {
             height: 20px;
             padding: 15px;
@@ -509,8 +516,9 @@
             font-size: 15px;
             height:;
         }
+
         div#tem_save_title {
-            margin-left:10px;
+            margin-left: 10px;
         }
 
         div.tem_dialog_bottom {
@@ -520,9 +528,11 @@
         input#tem_save_input {
             width: 270px;
         }
+
         #tem_btn_close {
             margin-left: 220px;
         }
+
         #dialog_load {
             width: 300px;
             height: 200px;
@@ -701,38 +711,46 @@
 
         }
 
+        function updatepoint() {
+            $.post('@Url.Content("~/History/Updatetree")', {  }, function (data) {
+                $.get('@Url.Content("~/File/Tree.json")', {}, function (data) {
+                    var zNodes = eval(data.tree);
+                    var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
 
+                }, 'json');
+            }, 'json');
+        }
 
-        function LoadTree() {
+            function LoadTree() {
             $.ajax({
                 type:"GET",
                 url: '@Url.Content("~/File/Tree.json")',
-                cache:false,
-                dataType:"json",
-                success:function (data){
-                    var zNodes = eval(data.tree);
-                    var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
-                    var id = GetCookie('id');           //模板编码
-                    $.post('@Url.Content("~/History/GetZtree")', { id: id }, function (data) {
-                        point = data.tree;
-                        console.log("页面刚加载时获取的point值:", point);
-                        var _nodesplit = data.tree.split(',');
-                        var treeObj = $.fn.zTree.getZTreeObj("tree");
-                        for (var i = 0; i < _nodesplit.length; i++) {
+            cache:false,
+            dataType:"json",
+            success:function (data){
+                var zNodes = eval(data.tree);
+                var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
+                var id = GetCookie('id');           //模板编码
+                $.post('@Url.Content("~/History/GetZtree")', { id: id }, function (data) {
+                    point = data.tree;
+                    console.log("页面刚加载时获取的point值:", point);
+                    var _nodesplit = data.tree.split(',');
+                    var treeObj = $.fn.zTree.getZTreeObj("tree");
+                    for (var i = 0; i < _nodesplit.length; i++) {
 
-                            var _node = treeObj.getNodeByParam("id", _nodesplit[i], null);
+                        var _node = treeObj.getNodeByParam("id", _nodesplit[i], null);
 
-                            treeObj.checkNode(_node, true, true);
+                        treeObj.checkNode(_node, true, true);
 
-                            var parent = _node.getParentNode();
-                            if (!parent.open) {
-                                treeObj.expandNode(parent, true, true);
-                            }
+                        var parent = _node.getParentNode();
+                        if (!parent.open) {
+                            treeObj.expandNode(parent, true, true);
                         }
+                    }
 
-                    }, 'json');
-                }
-            });
+                }, 'json');
+            }
+        });
         }
 
         function GetLineY(list) {
@@ -1327,8 +1345,6 @@
                 // 存储了绘制当前公式所需要的节点数据
                 var dataPointList = {};
                 var dataPointFormula = {};
-                dataPointFormula.list = [];
-                dataPointFormula.yAxis = [];
 
                 // 当前正在操作的公式 id
                 var formulaID = "";
@@ -1541,43 +1557,49 @@
                     }
                     // 公式删除界面
                     else if (target.className == "formula_list_content_del") {
-                        if (templeteID) {
-                            $.ajax({
-                                url: '@Url.Content("~/History/DelFormula")',
-                                data: { fid: formulaID },
-                                type: 'POST',
-                                success: function (judge) {
-                                    console.log("judge:", judge);
-                                    if (judge) {
-                                        for (var i = 0, len = dataPointList.list.length; i < len; i++) {
-                                            if (dataPointList.list[i].name == getFromFormulaList(dataFormula, formulaID, "title")) {
-                                                dataPointList.list.splice(i, 1);
-                                                dataPointList.yAxis.splice(i, 1);
+                        var r = confirm("确认删除!");
+                        if (r == true) {
+                            if (templeteID) {
+                                $.ajax({
+                                    url: '@Url.Content("~/History/DelFormula")',
+                                    data: { fid: formulaID },
+                                    type: 'POST',
+                                    success: function (judge) {
+                                        console.log("judge:", judge);
+                                        if (judge) {
+                                            for (var i = 0, len = dataPointList.list.length; i < len; i++) {
+                                                if (dataPointList.list[i].name == getFromFormulaList(dataFormula, formulaID, "title")) {
+                                                    dataPointList.list.splice(i, 1);
+                                                    dataPointList.yAxis.splice(i, 1);
+                                                }
                                             }
+                                            delInForlumaList(dataFormula, formulaID);
+                                            updateFormulaList(dataFormula);
                                         }
-                                        delInForlumaList(dataFormula, formulaID);
-                                        updateFormulaList(dataFormula);
+                                        else {
+                                            console.log("数据库故障");
+                                        }
+                                    },
+                                    error: function (error) {
+                                        console.log(error);
                                     }
-                                    else {
-                                        console.log("数据库故障");
+                                });
+                            }
+                            else {
+                                for (var i = 0, len = dataPointList.list.length; i < len; i++) {
+                                    if (dataPointList.list[i].name == getFromFormulaList(dataFormula, formulaID, "title")) {
+                                        dataPointList.list.splice(i, 1);
+                                        dataPointList.yAxis.splice(i, 1);
                                     }
-                                },
-                                error: function (error) {
-                                    console.log(error);
+
                                 }
-                            });
+                                delInForlumaList(dataFormula, formulaID);
+                                updateFormulaList(dataFormula);
+                            }
                         }
                         else {
-                            for (var i = 0, len = dataPointList.list.length; i < len; i++) {
-                                if (dataPointList.list[i].name == getFromFormulaList(dataFormula, formulaID, "title")) {
-                                    dataPointList.list.splice(i, 1);
-                                    dataPointList.yAxis.splice(i, 1);
-                                }
-
-                            }
-                            delInForlumaList(dataFormula, formulaID);
-                            updateFormulaList(dataFormula);
                         }
+
 
                     }
                 });
@@ -1605,14 +1627,16 @@
                             var flag = true;
                             for (var j = 0, lenj = dataPointList.list.length; j < lenj; j++) {
                                 // 表示 当前节点已存在
-                                if (dataFormula[i].title == dataPointList.list[j].name) {
+                                if (dataFormula[i].id == dataPointList.list[j].id) {
                                     flag = false;
                                     dataPointList.list[j].data = formulaCal(dataFormula[i].desc, dataPointList);
+                                    dataPointList.list[j].name = dataFormula[i].title;
                                 }
                             }
                             if (flag == true) {
                                 var listItem = {};
                                 var resultList = formulaCal(dataFormula[i].desc, dataPointList);
+                                listItem["id"] = dataFormula[i].id;
                                 listItem["data"] = resultList;
                                 listItem["name"] = dataFormula[i].title;
                                 listItem["yAxis"] = dataPointList.list[dataPointList.list.length - 1].yAxis + 1;
@@ -1625,8 +1649,8 @@
                                 yAxisItem["title"] = "{text:''}";
                                 yAxisItem["index"] = dataPointList.yAxis.length;
 
-                                dataPointFormula.list.push(listItem);
-                                dataPointFormula.yAxis.push(yAxisItem);
+                                dataPointList.list.push(listItem);
+                                dataPointList.yAxis.push(yAxisItem);
                             }
                         }
                         else {
@@ -1638,23 +1662,25 @@
                             }
                         }
                     }
-                    var dataPointOutPut = dataPointList;
-                    dataPointOutPut.list.concat(dataPointFormula.list);
-                    dataPointOutPut.yAxis.concat(dataPointFormula.yAxis);
                     console.log("画图前的dataPointList", dataPointList);
                     // huatu
-                    GetLine(dataPointOutPut);
+                    GetLine(dataPointList);
 
                     //////
                 });
 
                 // 公式编辑页的 保存 按钮
                 $("#dis_operate_btn_save").on("click", function () {
-                    var temp = $("#dis_output_formula");
-                    $("#dialog_confirm_body_formula")[0].innerText = temp[0].innerText;
-                    $("#dialogBg_confirm").show();
-                    $("#dv_formula_confirm").show();
-                    $("#confirm_formula_title").focus();
+                    if ($("#dis_output_result_cal")[0].innerText == "NaN") {
+                        alert("输入的公式格式有误（请确保公式内计算符号前后留有空格）");
+                    }
+                    else {
+                        var temp = $("#dis_output_formula");
+                        $("#dialog_confirm_body_formula")[0].innerText = temp[0].innerText;
+                        $("#dialogBg_confirm").show();
+                        $("#dv_formula_confirm").show();
+                        $("#confirm_formula_title").focus();
+                    }
                 });
 
                 // 公式编辑页的 取消 按钮
@@ -1751,16 +1777,6 @@
                     $("#dialogBg_confirm").hide();
                     $("#dv_formula_confirm").hide();
                 });
-
-                // 更新测点按钮
-                @*$("#btn_chart").on("click", function () {
-                    $.post('@Url.Content("~/History/Updatetree")', {  }, function (data) {
-                        $.get('@Url.Content("~/File/Tree.json")', {}, function (data) {
-                            var zNodes = eval(data.tree);
-                            var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
-                        }, 'json');
-                    }, 'json');
-                });*@
 
                 // 根据数据源信息 tableData 更新数据源列表，并且返回处理后的 数据源信息
                 function updateDataSourceList(dataSource) {
@@ -1873,7 +1889,7 @@
                         valueListItem["name"] = list[i].name;
                         valueList.push(valueListItem);
                     }
-                    console.log("valueList:", valueList)
+                    //console.log("valueList:", valueList);
                     // 进行公式的解析
                     var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
                         return "&";
@@ -2028,34 +2044,13 @@
                             console.log("页面刚加载时获取的原勾选的点的数据源:", dataSource);
                             dataPointList = data;
                             dataPointList.tb = "";
-                            dataPointList.list.splice(dataSource.length, dataPointList.list.length - dataSource.length);
-                            dataPointList.yAxis.splice(dataSource.length, dataPointList.yAxis.length - dataSource.length);
-
                             console.log("页面刚加载时获取的绘图所用数据", dataPointList);
-                            // 初始化公式曲线
-                            for (var i = 0, len = dataFormula.length; i < len; i++) {
-                                if (dataFormula[i].check == 1) {
-                                    var listItem = {};
-                                    var resultList = formulaCal(dataFormula[i].desc, dataPointList);
-                                    listItem["formulaID"] = dataFormula[i].id;
-                                    listItem["data"] = resultList;
-                                    listItem["name"] = dataFormula[i].title;
-                                    listItem["yAxis"] = dataPointList.list[dataPointList.list.length - 1].yAxis + 1;
-                                    listItem["_colorIndex"] = listItem["yAxis"];
-                                    listItem["_symbolIndex"] = listItem["yAxis"];
-
-                                    var yAxisItem = {};
-                                    yAxisItem["lineColor"] = lineColor.slice(dataPointList.yAxis.length, dataPointList.yAxis.length + 1).join("");
-                                    yAxisItem["lineWidth"] = 1;
-                                    yAxisItem["title"] = "{text:''}";
-                                    yAxisItem["index"] = dataPointList.yAxis.length;
-
-                                    dataPointFormula.list.push(listItem);
-                                    dataPointFormula.yAxis.push(yAxisItem);
-                                    var dataPointOutPut = dataPointList;
-                                    dataPointOutPut.list.concat(dataPointFormula.list);
-                                    dataPointOutPut.yAxis.concat(dataPointFormula.yAxis);
-                                    console.log("画图前的dataPointList", dataPointList);
+                            // updateDataSourceList(dataSource);
+                            for (var i = 0, len = dataPointList.list.length; i < len; i++) {
+                                for (var j = 0, lenj = dataFormula.length; j < lenj; j++) {
+                                    if (dataFormula[j].title == dataPointList.list[i].name) {
+                                        dataPointList.list[i].id = dataFormula[j].id;
+                                    }
                                 }
                             }
 
@@ -2064,7 +2059,7 @@
                             $("#fla_title").val(data.formulaTitle);
                             $("#fla_connect").val(data.formulaConnect);
 
-                            GetLine(data);
+                            GetLine(dataPointList);
                             GetTable(data.tb);
                         },
                         error: function (XMLHttpRequset, textStatus, errorThrown) {
@@ -2165,9 +2160,7 @@
                         </tr>
                     </table>
                     <div id="formula_list_content_container">
-                        <table id="formula_list_content" class="formula_list">
-                            
-                        </table>
+                        <table id="formula_list_content" class="formula_list"></table>
                     </div>
                 </div>
             </div>
@@ -2328,7 +2321,7 @@
                     请输入公式名称：
                 </div>
                 <div class="dialog_confirm_body_name_input">
-                    <input type="text" name="" id="confirm_formula_title" class = "confirm_formula_title" spellcheck="false" />
+                    <input type="text" name="" id="confirm_formula_title" class="confirm_formula_title" spellcheck="false" />
                 </div>
             </div>
             <div class="dialog_confirm_body_formula" id="dialog_confirm_body_formula">
@@ -2384,7 +2377,7 @@
                     <option value="1">时</option>
                 </select>
 
-                <div id="btn_chart" href="#" class="button_save" data-options="iconCls:'icon-save'" style="width:80px;margin-left:2px;">更新测点</div>
+                <div id="btn_chart" href="#" class="button_save" data-options="iconCls:'icon-save'" style="width:80px;margin-left:2px;" onclick="updatepoint()">更新测点</div>
                 <div id="btn_save" href="#" class="button_save" data-options="iconCls:'icon-save'" style="margin-left:2px;">保存</div>
                 <div id="btn_print" href="#" class="button_save" data-options="iconCls:'icon-save'" style="margin-left:2px;">打印</div>
                 <div id="btn_Formula" href="#" class="button_save" data-options="iconCls:'icon-save'" style="margin-left:2px;">公式</div>
