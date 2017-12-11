@@ -3,6 +3,8 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+
     <title></title>
 <!--     <script src="@Url.Content("~/Content/Js/jquery-1.9.1.js")"></script>
     <link href="@Url.Content("~/Content/Style/Page/CustomTrend.css")" rel="stylesheet" type="text/css" />
@@ -151,15 +153,28 @@
                 // 2. 不能是运算符
                 // 3. 不能是 sin, cos, tan 等特殊运算符
                 // 4. 应该是一串包含汉字，可能包含数字字母空格的字符串
-                var formulaTextRep = formulaText.replace(/(?![0-9a-z \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w ]+)/g, function (match) {
+
+                // 先替换不符合规则的 - 
+                var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
+                    return "&";
+                });
+                // 进行公式的转换
+                var formulaTextRep = formulaTextPreTreat.replace(/(?![0-9a-z ]+)([\u4e00-\u9fa5\w-# ]+)/g, function (match) {
+
                     // 过滤掉结尾的空格
-                    var matchNoNbsp = match.replace(/ *$/g, "");
-                    if (dataSource[matchNoNbsp])
-                        return dataSource[matchNoNbsp].value;
+                    var matchNoNbsp = match.replace(/(^ *)|( *$)/g, "");
+                    for (var i = 0, len = dataSource.length; i < len; i++) {
+                        if (dataSource[i].name == matchNoNbsp)
+                            return dataSource[i].value;
+                    }
+                });
+                // 将替换成 & 的 - 换回来
+                var formulaResult = formulaTextRep.replace(/\&+/g, function (match) {
+                    return "-";
                 });
 
                 try {
-                    var formulaTextRepNoNbsp = formulaTextRep.replace(/\s/g, "");
+                    var formulaTextRepNoNbsp = formulaResult.replace(/\s/g, "");
                     var calResult = math.format(math.eval(formulaTextRepNoNbsp), 7);
                     // console.log (calResult);
 
@@ -192,6 +207,18 @@
                 if (target.className == "formula_list_content_modify") {
                     $("#dis_output_formula")[0].innerText = getFromFormulaList(dataFormula, formulaID, "desc");
                     $("#confirm_formula_title").val(getFromFormulaList(dataFormula, formulaID, "title"));
+
+                    var matches = $("#dis_output_formula")[0].innerText.match(/(?![0-9a-z \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w ]+)/g);
+                    var matchesDataSource = [];
+                    for (var i = 0, len = matches.length; i < len; i++) {
+                        matches[i] = matches[i].replace(/ *$/g, "");
+                    }
+                    console.log(matches);
+                    var ajaxData = matches.join(",");
+                    console.log(ajaxData);
+                    // $.ajax ({});
+
+
                     $("#dv_formula_show").hide();
                     $("#dv_formula_modify").show();
                 }
@@ -219,6 +246,8 @@
             // 公式编辑页的 取消 按钮
             // 公式编辑页的 X 按钮
             $("#dis_operate_btn_cancel, #dv_formula_modify_close").on ("click", function () {
+                $("#dis_output_formula").text("");
+                $("#confirm_formula_title").val("");
                 $('#dv_formula_modify').hide();
                 $('#dv_formula_show').show();
             });
@@ -230,13 +259,16 @@
                 var formulaTextRep = formulaDesc.replace(/(?![0-9a-z \+\-\*\/\(\)\.]+)([\u4e00-\u9fa5\w ]+)/g, function (match) {
                     // 过滤掉结尾的空格
                     var matchNoNbsp = match.replace(/ *$/g, "");
-                    if (dataSource[matchNoNbsp])
-                        return "#" + dataSource[matchNoNbsp].data;
+                    for (var i = 0, len = dataSource.length; i < len; i++) {
+                    if (dataSource[i].name)
+                        return "#" + dataSource[i].data;
+
+                    }
                 });
                 var formulaTextRepNoNbsp = formulaTextRep.replace(/\s/g, "");
 
                 // 拼装 ajax 数据 data
-                var data = {"title": $("#confirm_formula_title").val(), "connect": formulaTextRepNoNbsp, "desc": formulaDesc, "id": formulaID, "mid": ""};
+                var data = {"title": $("#confirm_formula_title").val(), "content": formulaTextRepNoNbsp, "desc": formulaDesc, "id": formulaID, "mid": ""};
 
 
 
@@ -244,7 +276,7 @@
                     // 状态为编辑
                     if (dataFormula[i].id == formulaID) {
                         setFormulaList (dataFormula, formulaID, "title", data.title);
-                        setFormulaList (dataFormula, formulaID, "connect", data.connect);
+                        setFormulaList (dataFormula, formulaID, "content", data.content);
                         setFormulaList (dataFormula, formulaID, "desc", data.desc);
                         updateFormulaList(dataFormula);
 
@@ -301,70 +333,20 @@
             });
 
 
-            // 动态载入数据源信息
-            var tableData = [
-            {
-                "data": "0320000143",
-                "name": "逆变器 N13交流电压",
-                "value": "404.4"
-            },
-            {
-                "data": "0320000144",
-                "name": "逆变器 N13交流电流",
-                "value": "8.7"
-            },
-            {
-                "data": "0320000145",
-                "name": "逆变器 N14交流电压",
-                "value": "398.1"
-            },
-            {
-                "data": "0320000146",
-                "name": "逆变器 N14交流电流",
-                "value": "9.0"
-            },
-            {
-                "data": "0320000147",
-                "name": "逆变器 N15交流电压",
-                "value": "400.2"
-            },
-            {
-                "data": "0320000148",
-                "name": "逆变器 N15交流电流",
-                "value": "9.2"
+            // 根据数据源信息 dataSource 更新数据源列表，并且返回处理后的 数据源信息
+            function updateDataSourceList (dataSource) {
+                var formulaTable = '';
+                for (var i = 0, len = dataSource.length; i < len; i++) {
+                    formulaTable += '<tr><td class = "station_list_content_data">' + dataSource[i].data + '</td><td class = "station_list_content_name">' + dataSource[i].name + '</td><td class = "station_list_content_value">' + dataSource[i].value + '</td></tr>';
+                    // var tempObj = {"data": dataSource[i].data, "value": dataSource[i].value};
+                    // dataSource[dataSource[i].name] = tempObj;
+                }
+                // console.log ("formulaTable", formulaTable);
+                // console.log ("dataSource", dataSource);
+                $("#station_list_content").html(formulaTable);
+                // return dataSource;
             }
-            ];
-            
-            var formulaTable = '';
-            for (var i = 0, len = tableData.length; i < len; i++) {
-                formulaTable += '<tr><td class = "station_list_content_data">' + tableData[i].data + '</td><td class = "station_list_content_name">' + tableData[i].name + '</td><td class = "station_list_content_value">' + tableData[i].value + '</td></tr>';
-                var tempObj = {"data": tableData[i].data, "value": tableData[i].value};
-                dataSource[tableData[i].name] = tempObj;
-            }
-            // console.log ("formulaTable", formulaTable);
-            console.log ("dataSource", dataSource);
 
-            $("#station_list_content").html(formulaTable);
-
-            // 动态载入公式信息
-            var dataFormula = [
-            {
-                "title": "test1",
-                "connect": "1+#0320000143",
-                "desc": "1 + 逆变器 N13交流电压",
-                "id": "1512009713471",
-                "mid": ""
-            },
-            {
-                "title": "test2",
-                "connect": "#0320000143+#0320000144",
-                "desc": "逆变器 N13交流电压 + 逆变器 N13交流电流",
-                "id": "1512010473419",
-                "mid": ""
-            }];
-
-            // 储存所有公式信息,加载公式
-            updateFormulaList(dataFormula);
 
             // 根据公式信息 dataFormula 来刷新公式区
             function updateFormulaList (dataFormula) {
@@ -426,9 +408,98 @@
                 }
             }
 
-            // 下面是一些页面跳转的显示隐藏样式 
-            // 从公式列表页跳转到公式编辑/新建页
-            // 从公式编辑/新建也跳转到公式列表页
+
+
+            /** 下面是 模拟数据 以及 模拟数据调用函数进行初始化的相关代码
+             * 
+             * 
+             **/
+            // 动态载入数据源信息
+            var dataSource = [
+            {
+                "data": "WX1#ST:1:00",
+                "name": "HW20k--NB1-PV1电压",
+                "value": "613"
+            },
+            {
+                "data": "WX1#ST:1:00",
+                "name": "HW20k--NB1-PV2电压",
+                "value": "613"
+            },
+            {
+                "data": "WX1#ST:1:001AA00CE20001",
+                "name": "逆变器1-1# PV1输入电压",
+                "value": "613"
+            },
+            {
+                "data": "WX1#ST:1:001AA00CE20002",
+                "name": "逆变器1-1# PV2输入电压",
+                "value": "613"
+            },
+            {
+                "data": "0320000143",
+                "name": "逆变器 N13交流电压",
+                "value": "404.4"
+            },
+            {
+                "data": "0320000144",
+                "name": "逆变器 N13交流电流",
+                "value": "8.7"
+            },
+            {
+                "data": "0320000145",
+                "name": "逆变器 N14交流电压",
+                "value": "398.1"
+            },
+            {
+                "data": "0320000146",
+                "name": "逆变器 N14交流电流",
+                "value": "9.0"
+            },
+            {
+                "data": "0320000147",
+                "name": "逆变器 N15交流电压",
+                "value": "400.2"
+            },
+            {
+                "data": "0320000148",
+                "name": "逆变器 N15交流电流",
+                "value": "9.2"
+            }
+            ];
+
+            // 动态载入公式信息
+            var dataFormula = [
+            {
+                "title": "test1",
+                "content": "1+#0320000143",
+                "desc": "1 + 逆变器 N13交流电压",
+                "id": "1512009713471",
+                "mid": ""
+            },
+            {
+                "title": "test2",
+                "content": "#0320000143+#0320000144",
+                "desc": "逆变器 N13交流电压 + 逆变器 N13交流电流",
+                "id": "1512010473419",
+                "mid": ""
+            }];
+
+            // 储存所有公式信息,加载公式
+            updateFormulaList(dataFormula);
+            // 更新数据源列表，且处理 dataSource
+            updateDataSourceList(dataSource);
+
+
+            var testJSON = 
+            {
+                "mid": "2",
+                "data": [
+                    {"id" : "12345", "title": "test1", "content": "a+b", "desc": "A点 + B点"},
+                    {"id" : "12346", "title": "test2", "content": "a+c", "desc": "A点 + C点"}
+                ]
+            }
+
         });
     </script>
 
@@ -494,10 +565,10 @@
 
         /* 页面的两大模块 开始*/
         div#dv_formula_show {
-            /*display: none;*/
+            display: none;
         }
         div#dv_formula_modify {
-            display: none;
+            /*display: none;*/
         }
         /* 页面的两大模块 结束*/
 
@@ -819,7 +890,7 @@
         div.dialog_confirm_body_name_input {
 
         }
-        input#confirm_formula_title {
+        input.confirm_formula_title {
             border: 0;            
             border-bottom: 1px solid #e5e5e5;
             width: 300px;
@@ -829,7 +900,7 @@
             line-height: 15px;
             padding: 1px 15px;
         }
-        input#confirm_formula_title:focus {
+        input.confirm_formula_title:focus {
             box-shadow: 1px;
             outline: none;
         }
@@ -851,6 +922,36 @@
         }
         /* 点击保存之后的确认界面 结束 */
         /* 以上为 dv_formula_modify 界面的相关样式 */
+
+        div#tem_dialog {
+            width: 350px;
+            height: 190px;
+            border: solid 1px #e5e5e5;
+            box-sizing: border-box;
+            background-color: #fff;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-left: -175px;
+            margin-top: -95px;
+            display: none;
+        }
+        div.tem_dialog_top {
+            height: 20px;
+            padding: 15px;
+        }
+        div.tem_dialog_body {
+            padding: 15px;
+            font-size: 15px;
+
+            height: ;
+        }
+        div.tem_dialog_bottom {
+            padding-left: 180px;
+        }
+        input#tem_save_input {
+            width: 270px;
+        }
     </style>
 
 </head>
@@ -1026,7 +1127,7 @@
                         请输入公式名称：
                     </div>
                     <div class = "dialog_confirm_body_name_input">
-                        <input type = "text" name = "" id = "confirm_formula_title" spellcheck = "false" />
+                        <input type = "text" name = "" id = "confirm_formula_title" class = "confirm_formula_title" spellcheck = "false" />
                     </div>
                 </div>
                 <div class = "dialog_confirm_body_formula" id = "dialog_confirm_body_formula">
@@ -1038,5 +1139,25 @@
                 <button class = "dis_operate_btn" id = "confirm_btn_save">保存</button>
             </div>
         </div>
+
+
+
+
+    <div id="tem_dialog">
+        <div class="tem_dialog_top">
+            <span class="tem_dialog_name">保存模板</span>
+            <div class="btn_close" id="tem_btn_close"></div>
+        </div>
+        <div class="tem_dialog_body">
+            <div id="tem_save_title">模板名称</div>
+            <div id="tem_save_content">
+                <input type="text" name="" id="tem_save_input" class="confirm_formula_title" spellcheck="false" />
+            </div>
+        </div>
+        <div class="tem_dialog_bottom">
+            <button class="dis_operate_btn" id="tem_btn_cancel">取消</button>
+            <button class="dis_operate_btn" id="tem_btn_save">保存</button>
+        </div>
+    </div>
 </body>
 </html>
