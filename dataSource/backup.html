@@ -711,15 +711,7 @@
 
         }
 
-        function updatepoint() {
-            $.post('@Url.Content("~/History/Updatetree")', {  }, function (data) {
-                $.get('@Url.Content("~/File/Tree.json")', {}, function (data) {
-                    var zNodes = eval(data.tree);
-                    var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
 
-                }, 'json');
-            }, 'json');
-        }
 
             function LoadTree() {
             $.ajax({
@@ -1377,7 +1369,7 @@
                     var target = event.target;
                     // 初始化输出内容
                     // var output = "<span class = 'dis_output_source' contenteditable = 'false'>#";
-                    var output = " ";
+                    var output = " \"";
                     // 判断如果点击的是 数据源 这一列，则直接获取其数据源编号，如果不是，则顺着 tr 找到此行的数据源编号。
                     if (target.className != "station_list_content_name") {
                         output += target.parentElement.children[1].innerText;
@@ -1385,7 +1377,7 @@
                     else {
                         output += target.innerText;
                     }
-                    output += " ";
+                    output += "\" ";
                     // 准备向公式显示区输入
                     formulaContentDOM = $("#dis_output_formula");
 
@@ -1451,22 +1443,31 @@
                     // 3. 不能是 sin, cos, tan 等特殊运算符
                     // 4. 应该是一串包含汉字，可能包含数字字母的字符串
                     // 先替换不符合规则的 -
-                    var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
-                        return "&";
-                    });
-                    // 进行公式的转换
-                    var formulaTextRep = formulaTextPreTreat.replace(/(?![0-9a-z ]+)([\u4e00-\u9fa5\w-#:（） ]+)/g, function (match) {
+                    var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－（）()_、// ]+\"/g, function (match) {
+
                         // 过滤掉结尾的空格
-                        var matchNoNbsp = match.replace(/(^ *)|( *$)/g, "");
+                        var matchNoNbsp = match.replace(/(^ *\")|(\" *$)/g, "");
                         for (var i = 0, len = dataSource.length; i < len; i++) {
                             if (dataSource[i].name == matchNoNbsp)
                                 return dataSource[i].value;
                         }
                     });
-                    // 将替换成 & 的 - 换回来
-                    var formulaResult = formulaTextRep.replace(/\&+/g, function (match) {
-                        return "-";
-                    });
+                    //var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
+                    //    return "&";
+                    //});
+                    //// 进行公式的转换
+                    //var formulaTextRep = formulaTextPreTreat.replace(/(?![0-9a-z ]+)([\u4e00-\u9fa5\w-#:（） ]+)/g, function (match) {
+                    //    // 过滤掉结尾的空格
+                    //    var matchNoNbsp = match.replace(/(^ *)|( *$)/g, "");
+                    //    for (var i = 0, len = dataSource.length; i < len; i++) {
+                    //        if (dataSource[i].name == matchNoNbsp)
+                    //            return dataSource[i].value;
+                    //    }
+                    //});
+                    //// 将替换成 & 的 - 换回来
+                    //var formulaResult = formulaTextRep.replace(/\&+/g, function (match) {
+                    //    return "-";
+                    //});
                     try {
                         var formulaTextRepNoNbsp = formulaResult.replace(/\s/g, "");
                         var calResult = math.format(math.eval(formulaTextRepNoNbsp), 7);
@@ -1672,7 +1673,7 @@
                 // 公式编辑页的 保存 按钮
                 $("#dis_operate_btn_save").on("click", function () {
                     if ($("#dis_output_result_cal")[0].innerText == "NaN") {
-                        alert("输入的公式格式有误（请确保公式内计算符号前后留有空格）");
+                        alert("输入的公式格式有误（请确保公式内测点名前后有引号）");
                     }
                     else {
                         var temp = $("#dis_output_formula");
@@ -1698,14 +1699,10 @@
                     var formulaDesc = $("#dialog_confirm_body_formula")[0].innerText;
                     var formulaPointArray = [];
                     var formulaText = $("#dialog_confirm_body_formula")[0].innerText;
-                    // 先替换不符合规则的 -
-                    var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
-                        return "&";
-                    });
-                    // 进行公式的转换
-                    var formulaTextRep = formulaTextPreTreat.replace(/(?![0-9a-z ]+)([\u4e00-\u9fa5\w-#: ]+)/g, function (match) {
+
+                    var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－（）()_、// ]+\"/g, function (match) {
                         // 过滤掉结尾的空格
-                        var matchNoNbsp = match.replace(/ *$/g, "");
+                        var matchNoNbsp = match.replace(/(^ *\")|(\" *$)/g, "");
                         for (var i = 0, len = dataSource.length; i < len; i++) {
                             if (dataSource[i].name == matchNoNbsp) {
                                 if (formulaPointArray.length == 0) {
@@ -1723,10 +1720,35 @@
                             }
                         }
                     });
-                    // 将替换成 & 的 - 换回来
-                    var formulaResult = formulaTextRep.replace(/\&+/g, function (match) {
-                        return "-";
-                    });
+                    //// 先替换不符合规则的 -
+                    //var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
+                    //    return "&";
+                    //});
+                    //// 进行公式的转换
+                    //var formulaTextRep = formulaTextPreTreat.replace(/(?![0-9a-z ]+)([\u4e00-\u9fa5\w-#: ]+)/g, function (match) {
+                    //    // 过滤掉结尾的空格
+                    //    var matchNoNbsp = match.replace(/ *$/g, "");
+                    //    for (var i = 0, len = dataSource.length; i < len; i++) {
+                    //        if (dataSource[i].name == matchNoNbsp) {
+                    //            if (formulaPointArray.length == 0) {
+                    //                formulaPointArray.push(dataSource[i].para);
+                    //                return dataSource[i].para;
+                    //            }
+                    //            for (var j = 0; j < formulaPointArray.length; j++) {
+                    //                if (formulaPointArray[j] == dataSource[i].para) {
+                    //                    break;
+                    //                }
+                    //                formulaPointArray.push(dataSource[i].para);
+                    //                return dataSource[i].para;
+
+                    //            }
+                    //        }
+                    //    }
+                    //});
+                    //// 将替换成 & 的 - 换回来
+                    //var formulaResult = formulaTextRep.replace(/\&+/g, function (match) {
+                    //    return "-";
+                    //});
                     var formulaTextRepNoNbsp = formulaResult.replace(/\s/g, "");
 
                     // 拼装公式数据 data
@@ -1737,7 +1759,7 @@
                         "point": formulaPointArray.join(","),
                         "check": 0
                     };
-                    //console.log("单条公式的存储结果:", data);
+                    // console.log("单条公式的存储结果:", data);
 
                     // 隐藏确认、编辑对话框以及背景
                     $("#dialogBg_confirm").hide();
@@ -1891,35 +1913,45 @@
                     }
                     //console.log("valueList:", valueList);
                     for (var count = 0, lenCount = valueList[0].data.length; count < lenCount; count++) {
-
-                        // 进行公式的解析
-                        var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
-                            return "&";
-                        });
-                        // 进行公式的转换
-                        var formulaTextRep = formulaTextPreTreat.replace(/(?![0-9a-z ]+)([\u4e00-\u9fa5\w-#:（） ]+)/g, function (match) {
+                        var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－（）()_、// ]+\"/g, function (match) {
+                        
                             // 过滤掉结尾的空格
-                            var matchNoNbsp = match.replace(/(^ *)|( *$)/g, "");
+                            var matchNoNbsp = match.replace(/(^ *\")|(\" *$)/g, "");
                             for (var i = 0, len = list.length; i < len; i++) {
                                 if (list[i].name == matchNoNbsp) {
                                     return valueList[i].data[count];
-                                    //index++;
-                                    //var ident = "x" + index;
-                                    //// 暂未考虑两个节点相同的情况
-                                    //for (var j = 0, lenj = valueList.length; j < lenj; j++) {
-                                    //    if (valueList[j].name == matchNoNbsp) {
-                                    //        valueList[j]["ident"] = ident;
-                                    //        return ident;
-                                    //    }
-
-                                    //}
                                 }
                             }
                         });
-                        // 将替换成 & 的 - 换回来
-                        var formulaResult = formulaTextRep.replace(/\&+/g, function (match) {
-                            return "-";
-                        });
+
+                        //// 进行公式的解析
+                        //var formulaTextPreTreat = formulaText.replace(/(\s-\s)/g, function (match) {
+                        //    return "&";
+                        //});
+                        //// 进行公式的转换
+                        //var formulaTextRep = formulaTextPreTreat.replace(/(?![0-9a-z ]+)([\u4e00-\u9fa5\w-#:（） ]+)/g, function (match) {
+                        //    // 过滤掉结尾的空格
+                        //    var matchNoNbsp = match.replace(/(^ *)|( *$)/g, "");
+                        //    for (var i = 0, len = list.length; i < len; i++) {
+                        //        if (list[i].name == matchNoNbsp) {
+                        //            return valueList[i].data[count];
+                        //            //index++;
+                        //            //var ident = "x" + index;
+                        //            //// 暂未考虑两个节点相同的情况
+                        //            //for (var j = 0, lenj = valueList.length; j < lenj; j++) {
+                        //            //    if (valueList[j].name == matchNoNbsp) {
+                        //            //        valueList[j]["ident"] = ident;
+                        //            //        return ident;
+                        //            //    }
+
+                        //            //}
+                        //        }
+                        //    }
+                        //});
+                        //// 将替换成 & 的 - 换回来
+                        //var formulaResult = formulaTextRep.replace(/\&+/g, function (match) {
+                        //    return "-";
+                        //});
 
                         // console.log("formulaResult:", formulaResult);
 
@@ -2099,7 +2131,15 @@
                 }
         });
 
+         function updatepoint() {
+            $.post('@Url.Content("~/History/Updatetree")', {  }, function (data) {
+                $.get('@Url.Content("~/File/Tree.json")', {}, function (data) {
+                    var zNodes = eval(data.tree);
+                    var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
 
+                }, 'json');
+            }, 'json');
+        }
 
 
     </script>
