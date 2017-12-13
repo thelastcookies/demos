@@ -571,7 +571,7 @@
             //});
 
             //updatePoint();
-            //console.log("页面加载刷新point", point);
+            console.log("页面加载刷新point", point);
 
             var setting = {
             view: {
@@ -713,36 +713,36 @@
 
 
 
-            function LoadTree() {
+        function LoadTree() {
             $.ajax({
-                type:"GET",
+                type: "GET",
                 url: '@Url.Content("~/File/Tree.json")',
-            cache:false,
-            dataType:"json",
-            success:function (data){
-                var zNodes = eval(data.tree);
-                var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
-                var id = GetCookie('id');           //模板编码
-                $.post('@Url.Content("~/History/GetZtree")', { id: id }, function (data) {
-                    point = data.tree;
-                    //console.log("页面刚加载时获取的point值:", point);
-                    var _nodesplit = data.tree.split(',');
-                    var treeObj = $.fn.zTree.getZTreeObj("tree");
-                    for (var i = 0; i < _nodesplit.length; i++) {
+                cache: false,
+                dataType: "json",
+                success: function (data) {
+                    var zNodes = eval(data.tree);
+                    var zTree = $.fn.zTree.init($("#tree"), setting, zNodes);
+                    var id = GetCookie('id');           //模板编码
+                    $.post('@Url.Content("~/History/GetZtree")', { id: id }, function (data) {
+                        point = data.tree;
+                        console.log("页面刚加载时获取的point值:", point);
+                        var _nodesplit = data.tree.split(',');
+                        var treeObj = $.fn.zTree.getZTreeObj("tree");
+                        for (var i = 0; i < _nodesplit.length; i++) {
 
-                        var _node = treeObj.getNodeByParam("id", _nodesplit[i], null);
+                            var _node = treeObj.getNodeByParam("id", _nodesplit[i], null);
 
-                        treeObj.checkNode(_node, true, true);
+                            treeObj.checkNode(_node, true, true);
 
-                        var parent = _node.getParentNode();
-                        if (!parent.open) {
-                            treeObj.expandNode(parent, true, true);
+                            var parent = _node.getParentNode();
+                            if (!parent.open) {
+                                treeObj.expandNode(parent, true, true);
+                            }
                         }
-                    }
 
-                }, 'json');
-            }
-        });
+                    }, 'json');
+                }
+            });
         }
 
         function GetLineY(list) {
@@ -1443,7 +1443,7 @@
                     // 3. 不能是 sin, cos, tan 等特殊运算符
                     // 4. 应该是一串包含汉字，可能包含数字字母的字符串
                     // 先替换不符合规则的 -
-                    var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－（）()_、// ]+\"/g, function (match) {
+                    var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－\[\]（）()_、\/ ]+\"/g, function (match) {
 
                         // 过滤掉结尾的空格
                         var matchNoNbsp = match.replace(/(^ *\")|(\" *$)/g, "");
@@ -1534,7 +1534,7 @@
                                 type: 'POST',
                                 success: function (jsonData) {
                                     //var data = eval(jsonData);
-                                    //console.log("点按编辑按钮之后传来的 pointdata:", data);
+                                    console.log("点按编辑按钮之后传来的 pointdata:", data);
                                     //var nameArray = data.split(",");
                                     //for (var i = 0, leni = dataSource.length; i < leni; i++) {
                                     //    for (var j = 0, lenj = formulaPointArray.length; j < lenj; j++) {
@@ -1549,7 +1549,7 @@
                                     updateDataSourceList(dataSource);
                                 },
                                 error: function () {
-
+                                    alert("获取数据源失败，请检查网络连接");
                                 }
                             });
                         }
@@ -1582,7 +1582,7 @@
                                         }
                                     },
                                     error: function (error) {
-                                       // console.log(error);
+                                        alert("删除失败，请检查网络连接");
                                     }
                                 });
                             }
@@ -1626,9 +1626,10 @@
 
                         if (dataFormula[i].check == 1) {
                             var flag = true;
+                            
                             for (var j = 0, lenj = dataPointList.list.length; j < lenj; j++) {
                                 // 表示 当前节点已存在
-                                if (dataFormula[i].id == dataPointList.list[j].id) {
+                                if (dataPointList.list[j].id && dataFormula[i].id == dataPointList.list[j].id) {
                                     flag = false;
                                     dataPointList.list[j].data = formulaCal(dataFormula[i].desc, dataPointList);
                                     dataPointList.list[j].name = dataFormula[i].title;
@@ -1648,7 +1649,7 @@
                                 yAxisItem["lineColor"] = lineColor.slice(dataPointList.yAxis.length, dataPointList.yAxis.length + 1).join("");
                                 yAxisItem["lineWidth"] = 1;
                                 yAxisItem["title"] = "{text:''}";
-                                yAxisItem["index"] = dataPointList.yAxis.length;
+                                yAxisItem["index"] = listItem["yAxis"];
 
                                 dataPointList.list.push(listItem);
                                 dataPointList.yAxis.push(yAxisItem);
@@ -1656,14 +1657,20 @@
                         }
                         else {
                             for (var j = 0, lenj = dataPointList.list.length; j < lenj; j++) {
-                                if (dataFormula[i].title == dataPointList.list[j].name) {
+                                if (dataPointList.list[j].id && dataFormula[i].id == dataPointList.list[j].id) {
                                     dataPointList.list.splice(j, 1);
                                     dataPointList.yAxis.splice(j, 1);
+                                    for (var count = j, lenCount = dataPointList.list.length; count < lenCount; count++) {
+                                        dataPointList.list[count].yAxis--;
+                                        dataPointList.list[count]._colorIndex--;
+                                        dataPointList.list[count]._symbolIndex--;
+                                    }
+                                    break;
                                 }
                             }
                         }
                     }
-                    //console.log("画图前的dataPointList", dataPointList);
+                    console.log("画图前的dataPointList", dataPointList);
                     // huatu
                     GetLine(dataPointList);
 
@@ -1700,7 +1707,7 @@
                     var formulaPointArray = [];
                     var formulaText = $("#dialog_confirm_body_formula")[0].innerText;
 
-                    var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－（）()_、// ]+\"/g, function (match) {
+                    var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－\[\]（）()_、\/ ]+\"/g, function (match) {
                         // 过滤掉结尾的空格
                         var matchNoNbsp = match.replace(/(^ *\")|(\" *$)/g, "");
                         for (var i = 0, len = dataSource.length; i < len; i++) {
@@ -1711,7 +1718,8 @@
                                 }
                                 for (var j = 0; j < formulaPointArray.length; j++) {
                                     if (formulaPointArray[j] == dataSource[i].para) {
-                                        break;
+                                        return dataSource[i].para;
+                                        
                                     }
                                     formulaPointArray.push(dataSource[i].para);
                                     return dataSource[i].para;
@@ -1759,7 +1767,7 @@
                         "point": formulaPointArray.join(","),
                         "check": 0
                     };
-                    // console.log("单条公式的存储结果:", data);
+                    console.log("单条公式的存储结果:", data);
 
                     // 隐藏确认、编辑对话框以及背景
                     $("#dialogBg_confirm").hide();
@@ -1810,7 +1818,7 @@
                             // dataSource[tableData[i].name] = tempObj;
                         }
                         // console.log ("formulaTable", formulaTable);
-                        // console.log("每一次更新数据时的 dataSource", dataSource);
+                        console.log("每一次更新数据时的 dataSource", dataSource);
                         $("#station_list_content").html(formulaTable);
                         // return dataSource;
                     }
@@ -1913,8 +1921,8 @@
                     }
                     //console.log("valueList:", valueList);
                     for (var count = 0, lenCount = valueList[0].data.length; count < lenCount; count++) {
-                        var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－（）()_、// ]+\"/g, function (match) {
-                        
+                        var formulaResult = formulaText.replace(/\"[\u4e00-\u9fa5\w-#:－\[\]（）()_、\/ ]+\"/g, function (match) {
+
                             // 过滤掉结尾的空格
                             var matchNoNbsp = match.replace(/(^ *\")|(\" *$)/g, "");
                             for (var i = 0, len = list.length; i < len; i++) {
@@ -1958,7 +1966,7 @@
                         var formulaFinal = formulaResult.replace(/\s/g, "");
                         // x1+x2+x3
 
-                        valueResult.push(math.format(math.eval(formulaResult), 7));
+                        valueResult.push(math.format(math.eval(formulaFinal), 7));
 
 
                         //var formulaResult = formulaFinal.replace(/x\d/g, function (match) {
@@ -2004,7 +2012,7 @@
                         "data": dataFormula,
                         "pointid": point
                     };
-                    //console.log("向数据库中写入模板的所有数据:", data);
+                    console.log("向数据库中写入模板的所有数据:", data);
                     var ajaxData = JSON.stringify(data);
                     //console.log("ajaxData:", ajaxData);
 
@@ -2021,7 +2029,7 @@
                                 $("#dialogBg").fadeOut();
                             }
                             else {
-                                // console.log("数据库异常");
+                                alert("保存失败，经检查网络连接");
                             }
                         },
                         error: function (error) {
@@ -2077,18 +2085,19 @@
 
                             dataSourceJson = data.formula;
                             dataSource = eval(dataSourceJson);
-                            //console.log("页面刚加载时获取的原勾选的点的数据源:", dataSource);
+                            console.log("页面刚加载时获取的原勾选的点的数据源:", dataSource);
                             dataPointList = data;
                             dataPointList.tb = "";
-                            //console.log("页面刚加载时获取的绘图所用数据", dataPointList);
+                            console.log("页面刚加载时获取的绘图所用数据", dataPointList);
                             // updateDataSourceList(dataSource);
-                            for (var i = 0, len = dataPointList.list.length; i < len; i++) {
-                                for (var j = 0, lenj = dataFormula.length; j < lenj; j++) {
-                                    if (dataFormula[j].title == dataPointList.list[i].name) {
-                                        dataPointList.list[i].id = dataFormula[j].id;
+                            if (dataPointList.list && dataFormula && dataPointList.list.length > 0 && dataFormula.length > 0)
+                                for (var i = 0, len = dataPointList.list.length; i < len; i++) {
+                                    for (var j = 0, lenj = dataFormula.length; j < lenj; j++) {
+                                        if (dataFormula[j].title == dataPointList.list[i].name) {
+                                            dataPointList.list[i].id = dataFormula[j].id;
+                                        }
                                     }
                                 }
-                            }
 
                             $("#dv_list").html(data.formulaList);
 
@@ -2099,9 +2108,7 @@
                             GetTable(data.tb);
                         },
                         error: function (XMLHttpRequset, textStatus, errorThrown) {
-                            //console.log(XMLHttpRequset);
-                            //console.log(textStatus);
-                            //console.log(errorThrown);
+                            alert("页面初始化失败，请检查网络连接");
                         }
                     });
 
@@ -2113,7 +2120,7 @@
                             type: "POST",
                             success: function (data) {
                                 var dataParse = eval(data.tree);
-                                //console.log("从 mid 获取的之前模板中的所有公式:", dataParse);
+                                console.log("从 mid 获取的之前模板中的所有公式:", dataParse);
                                 if (dataParse) {
                                     for (var i = 0, len = dataParse.length; i < len; i++) {
                                         dataFormula.push(dataParse[i]);
@@ -2121,9 +2128,17 @@
                                     // 使用 updateFormulaList 方法更新公式列表页
                                     updateFormulaList(dataFormula);
                                 }
+                                if (dataPointList.list && dataFormula && dataPointList.list.length > 0 && dataFormula.length > 0)
+                                    for (var i = 0, len = dataPointList.list.length; i < len; i++) {
+                                        for (var j = 0, lenj = dataFormula.length; j < lenj; j++) {
+                                            if (dataFormula[j].title == dataPointList.list[i].name) {
+                                                dataPointList.list[i].id = dataFormula[j].id;
+                                            }
+                                        }
+                                    }
                             },
                             error: function (error) {
-                                //console.error(error);
+                                alert("获取公式失败，请检查网络连接");
                             }
                         });
 
@@ -2236,17 +2251,17 @@
                                     <td>exp(x)</td>
                                 </tr>
                                 @*<tr>
-                                    <td>floor(x)</td>
-                                </tr>*@
+                                        <td>floor(x)</td>
+                                    </tr>*@
                                 <tr>
                                     <td>log(x)</td>
                                 </tr>
                                 @*<tr>
-                                    <td>max(value1, value2, ...)</td>
-                                </tr>
-                                <tr>
-                                    <td>min(value1, value2, ...)</td>
-                                </tr>*@
+                                        <td>max(value1, value2, ...)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>min(value1, value2, ...)</td>
+                                    </tr>*@
                                 <tr>
                                     <td>sin(x)</td>
                                 </tr>
